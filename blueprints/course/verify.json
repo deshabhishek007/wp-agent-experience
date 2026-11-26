@@ -1,0 +1,18 @@
+{
+  "expected_blogname": "Online Course Studio",
+  "required_pages": [
+    "home",
+    "courses",
+    "my-courses",
+    "contact"
+  ],
+  "required_post_types": [
+    "wpax_course",
+    "wpax_lesson"
+  ],
+  "required_rest_routes": [
+    "/wp/v2/types",
+    "/wpax/v1/courses"
+  ],
+  "require_abilities_api": true
+}

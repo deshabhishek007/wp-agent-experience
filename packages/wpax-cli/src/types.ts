@@ -1,9 +1,18 @@
-export type PresetName = 'small-business' | 'commerce' | 'publishing';
+export type PresetName =
+  | 'small-business'
+  | 'commerce'
+  | 'publishing'
+  | 'nonprofit'
+  | 'course'
+  | 'migration';
 
 export const PRESET_NAMES: readonly PresetName[] = [
   'small-business',
   'commerce',
   'publishing',
+  'nonprofit',
+  'course',
+  'migration',
 ] as const;
 
 export interface BlueprintStep {
