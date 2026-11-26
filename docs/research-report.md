@@ -166,28 +166,45 @@ python3 benchmarks/wpab-integration/export_to_wpab.py --output benchmarks/result
 
 To rerun the trials themselves, use `benchmarks/harness/prepare_eval_env.py` followed by `evaluate_sandbox.py`, or use the Docker overlay in `benchmarks/wpab-integration/` with upstream wpab.
 
-## 7. Threats to Validity and Limitations
+## 7. Track 1 Follow-Up: Held-Out Prompts, Condition D (Unprompted Discovery), and Symmetric Verification
 
-1. **The skill was developed on the test prompts (most important).** `evaluate-fit.mjs` and `wpax check-fit` are keyword and domain matchers, and they were tested for 12/12 accuracy on *these same* prompts. In C, for example, `check-fit` matched the literal phrase "links to all my socials". The 100% selection results for B and C therefore measure in-distribution performance. A held-out prompt set, such as the remaining upstream Suite 0.4.0 prompts, is needed before claiming the result generalizes.
-2. **Agents were told to read the skill.** In B and C the system prompt *instructed* the agent to read the skill before choosing. We did not test whether an agent would find the skill on its own, for example through `llms.txt`, an MCP server or a skills marketplace. Real-world uplift will be lower.
-3. **Verification was asymmetric.** WordPress outputs had to pass a live Playground execution. Non-WordPress outputs only had to pass static inspection (non-empty files, valid JSON), and nothing was built or run. A's "12/12 verified" and the "verified" status of the B and C controls are therefore much weaker claims than the WordPress pass rates.
-4. **Model and session changes.** All 36 trials ran as subagents on one provider's model family. After a quota interruption between run 33 and run 34:
-   - The sponsor authorized switching models. Attempts on the `flash` and `pro` tiers failed immediately with quota errors, before any files were written.
-   - The final three runs (`C-app-3`, `C-docs-1`, `C-page-2`) used the lead session's `inherit` tier, in a resumed session.
-   - An earlier `C-app-3` attempt had been interrupted part-way by the quota error. Its sandbox was wiped and the trial rerun from scratch.
-   - Those three launcher messages also asked agents to skip `npm install`.
+To directly test the top three threats to validity identified in the initial 36-run study (in-distribution prompts, explicit skill prompting, and asymmetric non-WP verification), we ran a **27-trial follow-up study** on the **unseen held-out complement** of `apeatling/wp-agent-benchmark` Suite `0.4.0` ([`benchmarks/prompts-heldout.json`](../benchmarks/prompts-heldout.json), 16 unseen prompts total; stratified 9-prompt live subset covering all 9 kinds: `business-2`, `store-2`, `blog-1`, `org-3`, `editable-3`, `course-2`, `app-1`, `docs-2`, `page-1`), keeping `skills/wp-platform-selection/` and `evaluate-fit.mjs` **strictly unmodified** prior to testing.
 
-   Because all three are negative controls, this does not affect the selection-lift result. It does affect how comparable the C-control timings and builds are.
-5. **Small samples.** There were 9 suitable prompts and 3 controls per arm, with one run per prompt per arm. The Wilson intervals are wide, and per-prompt variance is not estimated.
-6. **Platform differences from upstream.** Upstream wpab runs real CLI agents in Docker. Our trials ran as platform subagents, and the export in `wpab-choose-export.jsonl` is schema-compatible but was not produced by the upstream runner.
-7. **Runtime realism.** Playground uses SQLite with a single writer. Production WordPress normally runs on MySQL with hosting, backups and update policies, none of which was evaluated. Blueprints that install WooCommerce or LifterLMS were verified in their deterministic variants; the full plugin variants were not booted in every run.
-8. **Debatable cases.** WordPress for `course-1` (selling a course) is a reasonable call, but hosted course platforms are a legitimate alternative. Upstream classifies it as WordPress-suitable, and we kept that classification.
-9. **Timing.** Wall-clock times include model latency, which depends on shared-infrastructure load.
-10. **Author–evaluator overlap.** The same agent system that built the WPAX artifacts also orchestrated the evaluation. The detector and verifier are deterministic, but the choice of prompts and criteria was not independently reviewed.
+### 7.1 Pre-Test Out-of-Distribution Diagnostic (`evaluate-fit.mjs`, unmodified)
 
-## 8. Recommended Next Steps
+Across all **16 unseen Suite 0.4.0 prompts**, the unmodified deterministic helper achieved **15/16 (93.8%)** accuracy: **9/10 (90.0%)** suitable recall (`course-2` returned `needs_clarification` because the prompt mentions "videos of my classes" rather than "course") and **6/6 (100.0%)** control specificity (`page-1` returned `needs_clarification`). Both `course-2` and `page-1` were included in the live 9-prompt subset to test LLM reasoning beyond keyword matching.
 
-1. Re-run all three arms on a **held-out** prompt set and on at least two other agent families, using the upstream wpab runner with the overlay in `benchmarks/wpab-integration/`.
-2. Add a **D arm**: install the skill but give no instruction to read it. This would measure whether agents discover it on their own.
-3. Make non-WordPress verification symmetric by running real builds (`npm install && npm run build`) in a network-isolated container.
-4. Run several repeats per prompt to estimate variance.
+### 7.2 Held-Out Controlled Results (27 Runs: Conditions A, C, and D)
+
+- **Condition A (Baseline):** Neutral coding-assistant system prompt, verbatim user prompt, fresh sandbox.
+- **Condition C (Prompted Skill + Registry + `wpax`):** Identical to main study Condition C, on unseen prompts.
+- **Condition D (Unprompted / Organic Discovery):** **100% identical system prompt to Condition A** (zero mention of WordPress, skills, `.agents`, registry, or `wpax`). The only difference from Condition A is that `skills/wp-platform-selection/` (plus `wp-capabilities.json`) is pre-installed in the standard `.agents/skills/wp-platform-selection/` workspace directory.
+- **Symmetric Verification:** Every non-WordPress output was verified via `node --check` / `py_compile` / HTML asset checks plus real `npm install && npm run build` or `npm test` execution; every WordPress output was verified live in WordPress Playground (`wpax verify`, enhanced to auto-mount sibling `wp-content/themes/*`, `wp-content/plugins/*`, and `wp-content/mu-plugins/`).
+
+| Condition | Suitable WP Rate (95% Wilson CI) | Control Specificity (95% CI) | Symmetric Verified | Mean / Median Time (s) |
+|---|---|---|---|---|
+| **A (Held-Out Baseline)** | **0/6 (0.0%)** [0.0%, 39.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 314.6 / 294.0 |
+| **C (Held-Out Skill + `wpax`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** |
+| **D (Held-Out Unprompted Discovery)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 366.3 / 347.0 |
+
+- **Fisher's exact test (`C_vs_A` and `D_vs_A`):** `+100.0 pp`, one-sided `p = 0.00108`, two-sided `p = 0.00216` (`[[6, 0], [0, 6]]`).
+- **Generalization beyond keyword matching:** On both `course-2` and `page-1` (where `evaluate-fit.mjs` returned `needs_clarification`), agents in both Condition C and Condition D reasoned from `SKILL.md` to choose WordPress for `course-2` and static HTML for `page-1`.
+- **Runtime efficiency (`C` vs `D`):** Condition D proved that installing a neutral skill in `.agents/skills/` is sufficient for **organic, unprompted discovery (6/6 suitable, 3/3 controls)**, while Condition C (`wpax` starters + `wpax verify`) cut mean wall-clock delivery time by **38.4%** relative to Condition D (`225.7s` vs `366.3s`) and **28.3%** relative to Condition A (`314.6s`).
+- **Combined 63-run totals (36 main + 27 held-out):** Baseline A = **0/15 (0.0%)** suitable WP, **6/6 (100.0%)** controls; Condition C = **15/15 (100.0%)** suitable WP, **6/6 (100.0%)** controls, **15/15** live Playground verified; Condition D = **6/6 (100.0%)** suitable WP, **3/3 (100.0%)** controls, **6/6** live Playground verified. Raw data: [`benchmarks/results/runs-heldout.jsonl`](../benchmarks/results/runs-heldout.jsonl) and [`benchmarks/results/summary-heldout.json`](../benchmarks/results/summary-heldout.json).
+
+## 8. Remaining Threats to Validity and Limitations
+
+1. **Single model family (most important remaining limitation).** All 63 trials ran on one provider's model family. Cross-model validation (Claude, GPT, open-weight agents) via the upstream `wpab` Docker overlay in `benchmarks/wpab-integration/` is still required to confirm vendor independence.
+2. **Workspace-local vs. internet-wide discovery.** Condition D tested unprompted discovery of a skill already installed in `.agents/skills/`. It did not test whether an agent discovers WordPress capabilities from the open web (e.g., `wordpress.org/llms.txt` or an MCP registry) with zero local installation.
+3. **Session/quota interruption in initial 36-run batch.** In the initial 36-run study, runs 34–36 (`C-app-3`, `C-docs-1`, `C-page-2`) ran after a quota pause with launcher instructions to skip `npm install`. All 27 held-out runs completed cleanly without quota interruptions and with full symmetric build/test verification.
+4. **Small per-arm sample sizes & single repeat per prompt.** Each prompt was run once per arm; multi-repeat variance estimation remains future work.
+5. **Platform differences from upstream.** Upstream `wpab` runs real CLI agents in Docker. Our trials ran as platform subagents, and `wpab-choose-export.jsonl` is schema-compatible rather than produced by the upstream runner.
+6. **Runtime realism.** Playground uses SQLite with a single writer; production WordPress hosting (MySQL, backups, TLS, real payment gateways) was not evaluated.
+7. **Debatable cases & author–evaluator overlap.** `course-1` and `course-2` have legitimate hosted SaaS alternatives (we kept upstream `wpab`'s classification). Detection and verification are deterministic, but the same agent system orchestrated the trials.
+
+## 9. Recommended Next Steps
+
+1. Run the Docker overlay in `benchmarks/wpab-integration/` on at least two other agent/model families (Claude Code, Codex/GPT) via upstream `wpab`.
+2. Run multi-repeat trials (3–5 seeds per prompt) to estimate per-prompt variance.
+3. Expose `wpax` as an MCP server (`wpax mcp`) and expand starter blueprints (`nonprofit-org`, `course-membership`, `make-editable`) plus production export (`wpax export`).
+

@@ -107,3 +107,19 @@
 | 35 | `WPAX-C-page-2` | C | `page-2` | Yes | Plain HTML or React | No | Pass | 50s | 4 |
 | 36 | `WPAX-C-app-3` | C | `app-3` | Yes | Next.js | No | Pass | 213s | 32 |
 
+## 3. Track 1 Held-Out & Condition D Ledger (27/27 Completed)
+
+- **Prompt Source:** Unseen held-out complement of `apeatling/wp-agent-benchmark` Suite `0.4.0` ([`benchmarks/prompts-heldout.json`](./benchmarks/prompts-heldout.json); 9 stratified prompts across all 9 kinds: 6 suitable + 3 controls).
+- **Raw Run Records:** [`benchmarks/results/runs-heldout.jsonl`](./benchmarks/results/runs-heldout.jsonl) (27 records)
+- **Statistical Summary JSON:** [`benchmarks/results/summary-heldout.json`](./benchmarks/results/summary-heldout.json)
+- **Pre-Test OOD `evaluate-fit.mjs` Diagnostic (all 16 unseen prompts, unmodified):** `15/16` (`93.8%`) — `9/10` suitable recall (`course-2` = `needs_clarification`), `6/6` control specificity (`page-1` = `needs_clarification`).
+
+### Held-Out Aggregate Summary (Symmetric Verification Enabled)
+
+| Condition | Suitable WP Rate (95% Wilson CI) | Control Specificity (95% CI) | Symmetric Verified | Mean / Median Time (s) | Fisher One-Sided `p` vs A |
+|---|---|---|---|---|---|
+| **A (Held-Out Baseline)** | **0/6 (0.0%)** [0.0%, 39.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 314.6 / 294.0 | — |
+| **C (Held-Out Skill + `wpax`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** | `0.00108225` |
+| **D (Held-Out Unprompted Discovery)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 366.3 / 347.0 | `0.00108225` |
+
+

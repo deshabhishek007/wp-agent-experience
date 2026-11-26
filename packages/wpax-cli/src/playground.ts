@@ -656,6 +656,30 @@ export async function verifyBlueprint(
       `--mount=${outDir}:/wpax-out`,
       '--verbosity=quiet',
     ];
+    // Auto-mount sibling wp-content/themes/*, wp-content/plugins/*, and wp-content/mu-plugins
+    // when present alongside blueprint.json (copying into tmpRoot so host sandboxes are never mutated).
+    const localWpContent = path.join(baseDir, 'wp-content');
+    if (fs.existsSync(localWpContent) && fs.statSync(localWpContent).isDirectory()) {
+      const mountStage = path.join(tmpRoot, 'wp-content');
+      for (const kind of ['themes', 'plugins'] as const) {
+        const kindDir = path.join(localWpContent, kind);
+        if (fs.existsSync(kindDir) && fs.statSync(kindDir).isDirectory()) {
+          for (const entry of fs.readdirSync(kindDir, { withFileTypes: true })) {
+            if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+            const src = path.join(kindDir, entry.name);
+            const dst = path.join(mountStage, kind, entry.name);
+            fs.cpSync(src, dst, { recursive: true });
+            args.push(`--mount=${dst}:/wordpress/wp-content/${kind}/${entry.name}`);
+          }
+        }
+      }
+      const muDir = path.join(localWpContent, 'mu-plugins');
+      if (fs.existsSync(muDir) && fs.statSync(muDir).isDirectory()) {
+        const muDst = path.join(mountStage, 'mu-plugins');
+        fs.cpSync(muDir, muDst, { recursive: true });
+        args.push(`--mount=${muDst}:/wordpress/wp-content/mu-plugins`);
+      }
+    }
     if (bundledPaths.size > 0) {
       args.push('--blueprint-may-read-adjacent-files');
     }

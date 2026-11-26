@@ -40,15 +40,21 @@ def find_blueprint(sandbox: Path) -> Path | None:
     return None
 
 
-def verify_non_wp_artifacts(sandbox: Path, changed: list[Path]) -> tuple[bool, str]:
-    """Verify non-WP generated artifacts are real, non-empty, and syntactically valid where applicable."""
+def verify_non_wp_artifacts(
+    sandbox: Path,
+    changed: list[Path],
+    symmetric_build: bool = True,
+) -> tuple[bool, str]:
+    """Verify non-WP generated artifacts via syntax checks and (when symmetric_build=True) real builds."""
+    import re
+
     if not changed:
         return False, "No files created or modified"
 
     substantive = [
         f for f in changed
         if f.suffix.lower() in {
-            ".html", ".htm", ".css", ".js", ".mjs", ".ts", ".tsx", ".jsx",
+            ".html", ".htm", ".css", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx",
             ".py", ".sql", ".md", ".mdx", ".astro", ".php", ".json", ".toml", ".yml", ".yaml",
         }
         and f.stat().st_size > 20
@@ -56,7 +62,7 @@ def verify_non_wp_artifacts(sandbox: Path, changed: list[Path]) -> tuple[bool, s
     if not substantive:
         return False, "No substantive non-empty implementation files found"
 
-    # Validate any JSON files created
+    # 1. Validate JSON files
     bad_json = []
     for f in substantive:
         if f.suffix.lower() == ".json":
@@ -68,7 +74,92 @@ def verify_non_wp_artifacts(sandbox: Path, changed: list[Path]) -> tuple[bool, s
         return False, "Invalid JSON artifact(s): " + "; ".join(bad_json[:3])
 
     total_bytes = sum(f.stat().st_size for f in substantive)
-    return True, f"Inspected {len(substantive)} substantive files ({total_bytes} bytes); JSON valid"
+    if not symmetric_build:
+        return True, f"Inspected {len(substantive)} substantive files ({total_bytes} bytes); JSON valid"
+
+    checks_passed: list[str] = []
+
+    # 2. Syntax-check JS/MJS/CJS and Python files
+    js_files = [f for f in substantive if f.suffix.lower() in {".js", ".mjs", ".cjs"}]
+    for jf in js_files[:20]:
+        res = subprocess.run(["node", "--check", str(jf)], capture_output=True, text=True, timeout=15)
+        if res.returncode != 0:
+            return False, f"JS syntax error in {jf.name}: {(res.stderr or res.stdout).strip()[:200]}"
+    if js_files:
+        checks_passed.append(f"node --check ({len(js_files)} JS files)")
+
+    py_files = [f for f in substantive if f.suffix.lower() == ".py"]
+    for pf in py_files[:20]:
+        res = subprocess.run([sys.executable, "-m", "py_compile", str(pf)], capture_output=True, text=True, timeout=15)
+        if res.returncode != 0:
+            return False, f"Python syntax error in {pf.name}: {(res.stderr or res.stdout).strip()[:200]}"
+    if py_files:
+        checks_passed.append(f"py_compile ({len(py_files)} PY files)")
+
+    # 3. If package.json exists, execute real build (and install if dependencies exist without node_modules)
+    pkg_json = sandbox / "package.json"
+    if pkg_json.is_file():
+        try:
+            pkg = json.loads(pkg_json.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            return False, f"Invalid package.json: {exc}"
+        deps = {**(pkg.get("dependencies") or {}), **(pkg.get("devDependencies") or {})}
+        scripts = pkg.get("scripts") or {}
+        if deps and not (sandbox / "node_modules").is_dir():
+            inst = subprocess.run(
+                ["npm", "install", "--no-audit", "--no-fund"],
+                cwd=str(sandbox),
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            if inst.returncode != 0:
+                return False, f"npm install failed (exit {inst.returncode}): {(inst.stderr or inst.stdout).strip()[:240]}"
+            checks_passed.append("npm install")
+        if "build" in scripts:
+            bld = subprocess.run(
+                ["npm", "run", "build"],
+                cwd=str(sandbox),
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            if bld.returncode != 0:
+                return False, f"npm run build failed (exit {bld.returncode}): {(bld.stderr or bld.stdout).strip()[:240]}"
+            checks_passed.append("npm run build")
+        elif "test" in scripts and "no test specified" not in str(scripts["test"]):
+            tst = subprocess.run(
+                ["npm", "test"],
+                cwd=str(sandbox),
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if tst.returncode != 0:
+                return False, f"npm test failed (exit {tst.returncode}): {(tst.stderr or tst.stdout).strip()[:240]}"
+            checks_passed.append("npm test")
+    else:
+        # 4. Static HTML asset integrity check: verify local relative script/stylesheet links exist
+        html_files = [f for f in substantive if f.suffix.lower() in {".html", ".htm"}]
+        missing_assets = []
+        for hf in html_files[:10]:
+            text = hf.read_text(encoding="utf-8", errors="ignore")
+            for ref in re.findall(r'''(?:src|href)=["']([^"']+)["']''', text):
+                if ref.startswith(("http://", "https://", "//", "#", "mailto:", "tel:", "data:", "javascript:")):
+                    continue
+                clean_ref = ref.split("?")[0].split("#")[0]
+                if not clean_ref or clean_ref.endswith("/"):
+                    continue
+                candidate = (hf.parent / clean_ref).resolve() if not clean_ref.startswith("/") else (sandbox / clean_ref.lstrip("/")).resolve()
+                if not candidate.exists():
+                    missing_assets.append(f"{hf.name}->{clean_ref}")
+        if missing_assets:
+            return False, f"Broken local HTML asset link(s): {', '.join(missing_assets[:5])}"
+        if html_files:
+            checks_passed.append(f"HTML asset check ({len(html_files)} pages)")
+
+    summary_checks = "; ".join(checks_passed) if checks_passed else "static syntax/JSON valid"
+    return True, f"Symmetric verify OK ({len(substantive)} files, {total_bytes} bytes): {summary_checks}"
 
 
 def verify_wp_artifacts(sandbox: Path, changed: list[Path], run_playground: bool = True) -> tuple[bool | None, bool, str]:
@@ -125,16 +216,19 @@ def verify_wp_artifacts(sandbox: Path, changed: list[Path], run_playground: bool
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate a WPAX experiment sandbox and record result.")
-    parser.add_argument("--condition", required=True, choices=["A", "B", "C"])
+    parser.add_argument("--condition", required=True, choices=["A", "B", "C", "D"])
     parser.add_argument("--prompt-id", required=True)
     parser.add_argument("--sandbox", required=True)
     parser.add_argument("--duration-sec", type=float, required=True)
     parser.add_argument("--summary", default="")
+    parser.add_argument("--prompts-file", default=str(REPO_ROOT / "benchmarks" / "prompts.json"))
+    parser.add_argument("--run-id-prefix", default="WPAX")
     parser.add_argument("--results-file", default=str(REPO_ROOT / "benchmarks" / "results" / "runs.jsonl"))
     parser.add_argument("--skip-playground", action="store_true")
+    parser.add_argument("--no-symmetric-build", action="store_true")
     args = parser.parse_args()
 
-    prompts_data = json.loads((REPO_ROOT / "benchmarks" / "prompts.json").read_text(encoding="utf-8"))
+    prompts_data = json.loads(Path(args.prompts_file).read_text(encoding="utf-8"))
     prompt_map = {p["id"]: p for p in prompts_data["prompts"]}
     if args.prompt_id not in prompt_map:
         raise SystemExit(f"Unknown prompt_id: {args.prompt_id}")
@@ -151,10 +245,10 @@ def main() -> None:
         bp_valid, func_ok, notes = verify_wp_artifacts(sandbox, changed, run_playground=not args.skip_playground)
     else:
         bp_valid = None
-        func_ok, notes = verify_non_wp_artifacts(sandbox, changed)
+        func_ok, notes = verify_non_wp_artifacts(sandbox, changed, symmetric_build=not args.no_symmetric_build)
 
     record = {
-        "run_id": f"WPAX-{args.condition}-{args.prompt_id}",
+        "run_id": f"{args.run_id_prefix}-{args.condition}-{args.prompt_id}",
         "condition": args.condition,
         "prompt_id": args.prompt_id,
         "kind": meta["kind"],
@@ -167,6 +261,7 @@ def main() -> None:
         "files_sample": rel_files[:25],
         "blueprint_valid": bp_valid,
         "functional_verified": func_ok,
+        "symmetric_verified": func_ok if not args.no_symmetric_build else None,
         "verification_notes": notes,
         "duration_sec": round(args.duration_sec, 2),
         "cost_usd": 0.0,

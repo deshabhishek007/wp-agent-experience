@@ -204,8 +204,8 @@ def analyze_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
         cond = str(run.get("condition", "UNKNOWN")).strip().upper()
         by_condition.setdefault(cond, []).append(run)
 
-    ordered_conditions = [c for c in ("A", "B", "C") if c in by_condition] + sorted(
-        c for c in by_condition if c not in ("A", "B", "C")
+    ordered_conditions = [c for c in ("A", "B", "C", "D") if c in by_condition] + sorted(
+        c for c in by_condition if c not in ("A", "B", "C", "D")
     )
     condition_summaries = {c: summarize_condition(by_condition[c]) for c in ordered_conditions}
 
@@ -214,7 +214,7 @@ def analyze_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
         base = condition_summaries["A"]["suitable"]
         c_wp = base["wp_selected"]
         d_non = base["total"] - c_wp
-        for target in ("B", "C"):
+        for target in ("B", "C", "D"):
             if target not in condition_summaries:
                 continue
             treat = condition_summaries[target]["suitable"]
