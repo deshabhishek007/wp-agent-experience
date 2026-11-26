@@ -31,7 +31,7 @@ We evaluated 12 verbatim platform-neutral prompts from `wp-agent-benchmark` (9 W
 
 - **Condition A (Baseline):** Unmodified coding agent in a clean sandbox.
 - **Condition B (Discovery + Registry):** Agent equipped with `skills/wp-platform-selection/SKILL.md` and `registry/wp-capabilities.json` (no runtime CLI).
-- **Condition C (Discovery + Registry + Runtime):** Condition B plus `@wpai/cli` wrapping pinned `@wp-playground/cli@3.1.66` (`wpai init`, `validate`, `verify`).
+- **Condition C (Discovery + Registry + Runtime):** Condition B plus `wpai-cli` wrapping pinned `@wp-playground/cli@3.1.66` (`wpai init`, `validate`, `verify`).
 
 | Condition | Suitable Tasks: Chose WP (95% Wilson CI) | Negative Controls: Avoided WP | Live WP Playground Verified | Mean Time — Suitable Tasks |
 |---|---|---|---|---|

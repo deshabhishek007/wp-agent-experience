@@ -1,5 +1,5 @@
 {
-  "name": "wpai",
+  "name": "wpai-cli",
   "version": "0.2.0",
   "description": "Minimal TypeScript CLI & MCP server wrapping @wp-playground/cli for WordPress project scaffolding, Blueprint validation, verification, production export, and capability discovery.",
   "license": "GPL-2.0-or-later",
@@ -19,6 +19,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
+    "wpai-cli": "dist/cli.js",
     "wpai": "dist/cli.js"
   },
   "files": [
