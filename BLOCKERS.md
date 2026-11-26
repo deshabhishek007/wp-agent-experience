@@ -11,4 +11,4 @@
 
 | ID | Description | Resolution | Resolved At (UTC) |
 |---|---|---|---|
-| BLK-000 | `@php-wasm/node-*@3.1.66` emits `EBADENGINE` warning requesting `node >= 24.18.0` while VM runs `v22.23.5` | Monitoring Playground runtime smoke test (`task-44`); will verify execution compatibility on Node 22.23.5 or pin compatible version if needed | Pending smoke test completion |
+| BLK-000 | `@php-wasm/node-*@3.1.66` emits `EBADENGINE` warning requesting `node >= 24.18.0` while VM runs `v22.23.5` | Verified end-to-end with `run-blueprint` + `--mount`: WordPress 7.1.5 + PHP 8.3.36 + Abilities API (`WP_Ability`) booted and returned clean JSON in ~20s on Node v22.23.5. Warning is non-blocking. | 2026-11-26T07:49:01Z |
