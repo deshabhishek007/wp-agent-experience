@@ -51,11 +51,30 @@ describe('wpax live WordPress Playground integration smoke test', () => {
       assert.equal(report.rest_api.types_status, 200);
       assert.ok(report.counts.pages >= 4, `Expected >=4 published pages, got ${report.counts.pages}`);
       assert.ok(
-        report.mu_plugins.includes('wpax-business-essentials.php'),
-        `Expected wpax-business-essentials.php in mu_plugins: ${JSON.stringify(report.mu_plugins)}`
+        report.mu_plugins.includes('wpax-business.php') ||
+          report.mu_plugins.includes('wpax-business-essentials.php'),
+        `Expected wpax business mu-plugin in mu_plugins: ${JSON.stringify(report.mu_plugins)}`
       );
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  for (const preset of ['small-business', 'commerce', 'publishing'] as const) {
+    it(`verifies repo blueprint "${preset}" end-to-end in WordPress Playground`, () => {
+      const bpDir = path.resolve(__dirname, '../../../../blueprints', preset);
+      const verifyOut = execFileSync(
+        process.execPath,
+        [cliEntry, 'verify', bpDir, '--timeout', '90000', '--json'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
+      );
+      const report = JSON.parse(verifyOut) as VerifyReport;
+      assert.equal(report.ok, true, JSON.stringify(report, null, 2));
+      assert.equal(report.wordpress_loaded, true);
+      assert.equal(report.abilities_api, true);
+      assert.equal(report.rest_api.types_status, 200);
+      assert.equal(report.php_last_error, null);
+    });
+  }
 });
+
