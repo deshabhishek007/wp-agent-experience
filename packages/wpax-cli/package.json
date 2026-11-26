@@ -5,7 +5,7 @@
   "license": "GPL-2.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/patilswapnilv/wp-agent-experience.git",
+    "url": "git+https://github.com/patilswapnilv/wp-agent-experience.git",
     "directory": "packages/wpax-cli"
   },
   "homepage": "https://github.com/patilswapnilv/wp-agent-experience#readme",
@@ -19,7 +19,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "wpax": "./dist/cli.js"
+    "wpax": "dist/cli.js"
   },
   "files": [
     "dist"
