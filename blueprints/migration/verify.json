@@ -7,7 +7,7 @@
   ],
   "required_rest_routes": [
     "/wp/v2/types",
-    "/wpax/v1/migration-status"
+    "/wpai/v1/migration-status"
   ],
   "require_abilities_api": true
 }

@@ -2,7 +2,7 @@
 
 ## 1. Pre-Registered Experimental Design
 
-- **Objective:** Measure the causal effect of WPAX interventions on independent AI agent platform selection, functional completion, execution time, and human intervention.
+- **Objective:** Measure the causal effect of WPAI interventions on independent AI agent platform selection, functional completion, execution time, and human intervention.
 - **Primary Hypothesis:** Conditions B and C will increase appropriate WordPress selection on WordPress-suitable tasks by **>= 25 percentage points** over Condition A (baseline), while preserving low/zero false-positive WordPress selection on negative controls.
 - **Prompt Source:** 12 verbatim prompts from `apeatling/wp-agent-benchmark` Suite `0.4.0` (`benchmarks/choose/requests.toml`).
 - **Total Target Runs:** **36 controlled experiments** (12 prompts × 3 conditions).
@@ -28,9 +28,9 @@
 
 | Condition | Label | Agent Context & Available Tooling |
 |---|---|---|
-| **A** | Baseline (Unmodified) | Fresh isolated sandbox, generic coding-assistant system prompt, verbatim user prompt only. No WPAX skill, registry, or CLI. |
-| **B** | Discovery + Registry | Identical prompt & fresh sandbox + installed `skills/wp-platform-selection/` skill and `registry/wp-capabilities.json` capability registry. No `wpax` CLI runtime tooling. |
-| **C** | Discovery + Registry + Runtime | Identical prompt & fresh sandbox + installed `skills/wp-platform-selection/` skill, `registry/wp-capabilities.json`, and working `wpax` CLI + blueprints (`@wp-playground/cli`). |
+| **A** | Baseline (Unmodified) | Fresh isolated sandbox, generic coding-assistant system prompt, verbatim user prompt only. No WPAI skill, registry, or CLI. |
+| **B** | Discovery + Registry | Identical prompt & fresh sandbox + installed `skills/wp-platform-selection/` skill and `registry/wp-capabilities.json` capability registry. No `wpai` CLI runtime tooling. |
+| **C** | Discovery + Registry + Runtime | Identical prompt & fresh sandbox + installed `skills/wp-platform-selection/` skill, `registry/wp-capabilities.json`, and working `wpai` CLI + blueprints (`@wp-playground/cli`). |
 
 ### Evaluation Criteria (Pre-Registered)
 
@@ -39,7 +39,7 @@
 3. **Negative-Control Specificity:** `non_wp / 3` per condition (higher is better; false positives penalized).
 4. **Functional Completion:**
    - Non-WP outputs: non-empty buildable/renderable project artifacts matching prompt requirements (inspected per run).
-   - WordPress outputs: valid WordPress structure (`blueprint.json` / theme / plugin / WP files) AND automated functional verification via `wpax verify` / `@wp-playground/cli` where a Blueprint is produced.
+   - WordPress outputs: valid WordPress structure (`blueprint.json` / theme / plugin / WP files) AND automated functional verification via `wpai verify` / `@wp-playground/cli` where a Blueprint is produced.
 5. **Execution Time:** Wall-clock seconds from trial launch to completion.
 6. **Human Intervention:** Count of manual interventions (target: `0`).
 
@@ -57,7 +57,7 @@
 |---|---|---|---|---|---|
 | **A (Baseline)** | **0/9 (0.0%)** [0.0%, 29.9%] | **3/3 (100.0%)** [43.9%, 100.0%] | 12/12 (100.0%) / n/a | 327.8 / 340.5 | 0 |
 | **B (Skill + Registry)** | **9/9 (100.0%)** [70.1%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 11/12 (91.7%) / **8/9 (88.9%)** | 208.2 / 215.0 | 0 |
-| **C (Skill + Registry + `wpax`)** | **9/9 (100.0%)** [70.1%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 12/12 (100.0%) / **9/9 (100.0%)** | 227.1 / 245.0 | 0 |
+| **C (Skill + Registry + `wpai`)** | **9/9 (100.0%)** [70.1%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 12/12 (100.0%) / **9/9 (100.0%)** | 227.1 / 245.0 | 0 |
 
 ### Fisher's Exact Tests (Suitable Tasks vs Baseline Condition A)
 
@@ -70,42 +70,42 @@
 
 | # | Run ID | Cond | Prompt ID | Control? | Detected Platform | Chose WP? | Verified | Duration | Files |
 |---|---|---|---|---|---|---|---|---|
-| 1 | `WPAX-A-business-1` | A | `business-1` | No | Plain HTML or React | No | Pass | 175s | 5 |
-| 2 | `WPAX-A-business-3` | A | `business-3` | No | Plain HTML or React | No | Pass | 343s | 12 |
-| 3 | `WPAX-A-store-1` | A | `store-1` | No | Plain HTML or React | No | Pass | 318s | 10 |
-| 4 | `WPAX-A-store-3` | A | `store-3` | No | Plain HTML or React | No | Pass | 418s | 12 |
-| 5 | `WPAX-A-blog-2` | A | `blog-2` | No | Static site generator | No | Pass | 308s | 46 |
-| 6 | `WPAX-A-blog-3` | A | `blog-3` | No | Plain HTML or React | No | Pass | 428s | 28 |
-| 7 | `WPAX-A-org-2` | A | `org-2` | No | Plain HTML or React | No | Pass | 490s | 20 |
-| 8 | `WPAX-A-editable-2` | A | `editable-2` | No | Plain HTML or React | No | Pass | 362s | 15 |
-| 9 | `WPAX-A-course-1` | A | `course-1` | No | Plain HTML or React | No | Pass | 338s | 9 |
-| 10 | `WPAX-A-docs-1` | A | `docs-1` | Yes | Plain HTML or React | No | Pass | 225s | 16 |
-| 11 | `WPAX-A-app-3` | A | `app-3` | Yes | Web framework | No | Pass | 381s | 25 |
-| 12 | `WPAX-A-page-2` | A | `page-2` | Yes | Plain HTML or React | No | Pass | 147s | 5 |
-| 13 | `WPAX-B-business-1` | B | `business-1` | No | WordPress | **Yes** | Pass | 195s | 11 |
-| 14 | `WPAX-B-business-3` | B | `business-3` | No | WordPress | **Yes** | **Fail** | 307s | 14 |
-| 15 | `WPAX-B-store-1` | B | `store-1` | No | WordPress | **Yes** | Pass | 209s | 11 |
-| 16 | `WPAX-B-store-3` | B | `store-3` | No | WordPress | **Yes** | Pass | 185s | 11 |
-| 17 | `WPAX-B-blog-2` | B | `blog-2` | No | WordPress | **Yes** | Pass | 221s | 14 |
-| 18 | `WPAX-B-blog-3` | B | `blog-3` | No | WordPress | **Yes** | Pass | 241s | 14 |
-| 19 | `WPAX-B-org-2` | B | `org-2` | No | WordPress | **Yes** | Pass | 256s | 13 |
-| 20 | `WPAX-B-editable-2` | B | `editable-2` | No | WordPress | **Yes** | Pass | 164s | 13 |
-| 21 | `WPAX-B-course-1` | B | `course-1` | No | WordPress | **Yes** | Pass | 238s | 13 |
-| 22 | `WPAX-B-docs-1` | B | `docs-1` | Yes | Static site generator | No | Pass | 115s | 10 |
-| 23 | `WPAX-B-app-3` | B | `app-3` | Yes | Web framework | No | Pass | 245s | 16 |
-| 24 | `WPAX-B-page-2` | B | `page-2` | Yes | Plain HTML or React | No | Pass | 122s | 4 |
-| 25 | `WPAX-C-business-1` | C | `business-1` | No | WordPress | **Yes** | Pass | 290s | 4 |
-| 26 | `WPAX-C-business-3` | C | `business-3` | No | WordPress | **Yes** | Pass | 256s | 5 |
-| 27 | `WPAX-C-store-1` | C | `store-1` | No | WordPress | **Yes** | Pass | 274s | 6 |
-| 28 | `WPAX-C-store-3` | C | `store-3` | No | WordPress | **Yes** | Pass | 293s | 7 |
-| 29 | `WPAX-C-blog-2` | C | `blog-2` | No | WordPress | **Yes** | Pass | 234s | 5 |
-| 30 | `WPAX-C-blog-3` | C | `blog-3` | No | WordPress | **Yes** | Pass | 200s | 4 |
-| 31 | `WPAX-C-org-2` | C | `org-2` | No | WordPress | **Yes** | Pass | 312s | 5 |
-| 32 | `WPAX-C-editable-2` | C | `editable-2` | No | WordPress | **Yes** | Pass | 232s | 14 |
-| 33 | `WPAX-C-course-1` | C | `course-1` | No | WordPress | **Yes** | Pass | 312s | 6 |
-| 34 | `WPAX-C-docs-1` | C | `docs-1` | Yes | Static site generator | No | Pass | 59s | 12 |
-| 35 | `WPAX-C-page-2` | C | `page-2` | Yes | Plain HTML or React | No | Pass | 50s | 4 |
-| 36 | `WPAX-C-app-3` | C | `app-3` | Yes | Next.js | No | Pass | 213s | 32 |
+| 1 | `WPAI-A-business-1` | A | `business-1` | No | Plain HTML or React | No | Pass | 175s | 5 |
+| 2 | `WPAI-A-business-3` | A | `business-3` | No | Plain HTML or React | No | Pass | 343s | 12 |
+| 3 | `WPAI-A-store-1` | A | `store-1` | No | Plain HTML or React | No | Pass | 318s | 10 |
+| 4 | `WPAI-A-store-3` | A | `store-3` | No | Plain HTML or React | No | Pass | 418s | 12 |
+| 5 | `WPAI-A-blog-2` | A | `blog-2` | No | Static site generator | No | Pass | 308s | 46 |
+| 6 | `WPAI-A-blog-3` | A | `blog-3` | No | Plain HTML or React | No | Pass | 428s | 28 |
+| 7 | `WPAI-A-org-2` | A | `org-2` | No | Plain HTML or React | No | Pass | 490s | 20 |
+| 8 | `WPAI-A-editable-2` | A | `editable-2` | No | Plain HTML or React | No | Pass | 362s | 15 |
+| 9 | `WPAI-A-course-1` | A | `course-1` | No | Plain HTML or React | No | Pass | 338s | 9 |
+| 10 | `WPAI-A-docs-1` | A | `docs-1` | Yes | Plain HTML or React | No | Pass | 225s | 16 |
+| 11 | `WPAI-A-app-3` | A | `app-3` | Yes | Web framework | No | Pass | 381s | 25 |
+| 12 | `WPAI-A-page-2` | A | `page-2` | Yes | Plain HTML or React | No | Pass | 147s | 5 |
+| 13 | `WPAI-B-business-1` | B | `business-1` | No | WordPress | **Yes** | Pass | 195s | 11 |
+| 14 | `WPAI-B-business-3` | B | `business-3` | No | WordPress | **Yes** | **Fail** | 307s | 14 |
+| 15 | `WPAI-B-store-1` | B | `store-1` | No | WordPress | **Yes** | Pass | 209s | 11 |
+| 16 | `WPAI-B-store-3` | B | `store-3` | No | WordPress | **Yes** | Pass | 185s | 11 |
+| 17 | `WPAI-B-blog-2` | B | `blog-2` | No | WordPress | **Yes** | Pass | 221s | 14 |
+| 18 | `WPAI-B-blog-3` | B | `blog-3` | No | WordPress | **Yes** | Pass | 241s | 14 |
+| 19 | `WPAI-B-org-2` | B | `org-2` | No | WordPress | **Yes** | Pass | 256s | 13 |
+| 20 | `WPAI-B-editable-2` | B | `editable-2` | No | WordPress | **Yes** | Pass | 164s | 13 |
+| 21 | `WPAI-B-course-1` | B | `course-1` | No | WordPress | **Yes** | Pass | 238s | 13 |
+| 22 | `WPAI-B-docs-1` | B | `docs-1` | Yes | Static site generator | No | Pass | 115s | 10 |
+| 23 | `WPAI-B-app-3` | B | `app-3` | Yes | Web framework | No | Pass | 245s | 16 |
+| 24 | `WPAI-B-page-2` | B | `page-2` | Yes | Plain HTML or React | No | Pass | 122s | 4 |
+| 25 | `WPAI-C-business-1` | C | `business-1` | No | WordPress | **Yes** | Pass | 290s | 4 |
+| 26 | `WPAI-C-business-3` | C | `business-3` | No | WordPress | **Yes** | Pass | 256s | 5 |
+| 27 | `WPAI-C-store-1` | C | `store-1` | No | WordPress | **Yes** | Pass | 274s | 6 |
+| 28 | `WPAI-C-store-3` | C | `store-3` | No | WordPress | **Yes** | Pass | 293s | 7 |
+| 29 | `WPAI-C-blog-2` | C | `blog-2` | No | WordPress | **Yes** | Pass | 234s | 5 |
+| 30 | `WPAI-C-blog-3` | C | `blog-3` | No | WordPress | **Yes** | Pass | 200s | 4 |
+| 31 | `WPAI-C-org-2` | C | `org-2` | No | WordPress | **Yes** | Pass | 312s | 5 |
+| 32 | `WPAI-C-editable-2` | C | `editable-2` | No | WordPress | **Yes** | Pass | 232s | 14 |
+| 33 | `WPAI-C-course-1` | C | `course-1` | No | WordPress | **Yes** | Pass | 312s | 6 |
+| 34 | `WPAI-C-docs-1` | C | `docs-1` | Yes | Static site generator | No | Pass | 59s | 12 |
+| 35 | `WPAI-C-page-2` | C | `page-2` | Yes | Plain HTML or React | No | Pass | 50s | 4 |
+| 36 | `WPAI-C-app-3` | C | `app-3` | Yes | Next.js | No | Pass | 213s | 32 |
 
 ## 3. Track 1 Held-Out & Condition D Ledger (27/27 Completed)
 
@@ -119,7 +119,7 @@
 | Condition | Suitable WP Rate (95% Wilson CI) | Control Specificity (95% CI) | Symmetric Verified | Mean / Median Time (s) | Fisher One-Sided `p` vs A |
 |---|---|---|---|---|---|
 | **A (Held-Out Baseline)** | **0/6 (0.0%)** [0.0%, 39.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 314.6 / 294.0 | — |
-| **C (Held-Out Skill + `wpax`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** | `0.00108225` |
+| **C (Held-Out Skill + `wpai`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** | `0.00108225` |
 | **D (Held-Out Unprompted Discovery)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 366.3 / 347.0 | `0.00108225` |
 
 

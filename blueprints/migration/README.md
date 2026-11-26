@@ -1,11 +1,11 @@
 # Migrated Editable Site
 
-Scaffolded by `wpax init migration`.
+Scaffolded by `wpai init migration`.
 
 ## Quick Start
 
 ```bash
 npm start
-wpax verify .
-wpax export . --out ./dist-wp
+wpai verify .
+wpai export . --out ./dist-wp
 ```

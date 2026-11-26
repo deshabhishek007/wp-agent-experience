@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export WPAX experiment runs (`runs.jsonl`) to `apeatling/wp-agent-benchmark` choose-run v1.0 schema.
+"""Export WPAI experiment runs (`runs.jsonl`) to `apeatling/wp-agent-benchmark` choose-run v1.0 schema.
 
 Conforms strictly to `schema/choose-run.schema.json` (`schema_version: "1.0"`,
 `additionalProperties: false`).
@@ -58,10 +58,10 @@ def convert_record(
     suite_version: str = "0.4.0",
     default_model: str = "google/gemini-antigravity",
     default_harness: str = "antigravity-subagent",
-    default_harness_version: str = "wpax-0.1.0",
+    default_harness_version: str = "wpai-0.1.0",
     default_auth: str = "plan",
 ) -> dict[str, Any]:
-    """Convert a single WPAX run dict into a choose-run.schema.json v1.0 compliant record."""
+    """Convert a single WPAI run dict into a choose-run.schema.json v1.0 compliant record."""
     yymm = _batch_to_yymm(batch)
     run_id = f"C{yymm}-L{seq:04d}"
 
@@ -73,7 +73,7 @@ def convert_record(
     model = str(run.get("model") or default_model)
     harness = str(run.get("harness") or default_harness)
     harness_version = str(run.get("harness_version") or default_harness_version)
-    agent = str(run.get("agent") or f"wpax-cond-{condition.lower()}-{harness}")
+    agent = str(run.get("agent") or f"wpai-cond-{condition.lower()}-{harness}")
     auth = str(run.get("auth") or default_auth)
     if auth not in ("api", "plan"):
         auth = "plan"
@@ -105,9 +105,9 @@ def convert_record(
     )
 
     env_map = {
-        "A": "wpax-baseline",
-        "B": "wpax-discovery-registry",
-        "C": "wpax-discovery-registry-runtime",
+        "A": "wpai-baseline",
+        "B": "wpai-discovery-registry",
+        "C": "wpai-discovery-registry-runtime",
     }
 
     record: dict[str, Any] = {
@@ -124,7 +124,7 @@ def convert_record(
         "harness": harness,
         "harness_version": harness_version,
         "effort": run.get("effort"),
-        "environment": str(run.get("environment") or env_map.get(condition, f"wpax-{condition.lower()}")),
+        "environment": str(run.get("environment") or env_map.get(condition, f"wpai-{condition.lower()}")),
         "auth": auth,
         "status": status,
         "status_detail": run.get("status_detail"),
@@ -154,7 +154,7 @@ def convert_record(
         "why_not_answer": run.get("why_not_answer"),
         "patterns": list(run.get("patterns") or []),
         "classifier": None,
-        "job": str(run.get("job") or f"wpax-{batch}-cond-{condition.lower()}"),
+        "job": str(run.get("job") or f"wpai-{batch}-cond-{condition.lower()}"),
         "trial": str(run.get("trial") or run.get("run_id") or f"{condition.lower()}-{request_id}"),
         "harbor_version": run.get("harbor_version"),
         "runner_commit": run.get("runner_commit"),
@@ -179,7 +179,7 @@ def export_jsonl(input_path: Path, output_path: Path, *, batch: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Export WPAX runs.jsonl to wp-agent-benchmark choose-run v1.0 JSONL.")
+    parser = argparse.ArgumentParser(description="Export WPAI runs.jsonl to wp-agent-benchmark choose-run v1.0 JSONL.")
     parser.add_argument("--input", type=Path, default=Path("benchmarks/results/runs.jsonl"))
     parser.add_argument("--output", type=Path, default=Path("benchmarks/results/wpab-choose-runs.jsonl"))
     parser.add_argument("--batch", type=str, default=datetime.now(timezone.utc).strftime("%Y-%m"))

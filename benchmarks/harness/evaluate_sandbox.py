@@ -163,8 +163,8 @@ def verify_non_wp_artifacts(
 
 
 def verify_wp_artifacts(sandbox: Path, changed: list[Path], run_playground: bool = True) -> tuple[bool | None, bool, str]:
-    """Validate and optionally verify WordPress artifacts using wpax CLI against real Playground."""
-    cli_js = REPO_ROOT / "packages" / "wpax-cli" / "dist" / "cli.js"
+    """Validate and optionally verify WordPress artifacts using wpai CLI against real Playground."""
+    cli_js = REPO_ROOT / "packages" / "wpai-cli" / "dist" / "cli.js"
     bp = find_blueprint(sandbox)
     if bp is None:
         # WordPress theme/plugin/PHP without a blueprint.json: check PHP syntax
@@ -215,14 +215,14 @@ def verify_wp_artifacts(sandbox: Path, changed: list[Path], run_playground: bool
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate a WPAX experiment sandbox and record result.")
+    parser = argparse.ArgumentParser(description="Evaluate a WPAI experiment sandbox and record result.")
     parser.add_argument("--condition", required=True, choices=["A", "B", "C", "D"])
     parser.add_argument("--prompt-id", required=True)
     parser.add_argument("--sandbox", required=True)
     parser.add_argument("--duration-sec", type=float, required=True)
     parser.add_argument("--summary", default="")
     parser.add_argument("--prompts-file", default=str(REPO_ROOT / "benchmarks" / "prompts.json"))
-    parser.add_argument("--run-id-prefix", default="WPAX")
+    parser.add_argument("--run-id-prefix", default="WPAI")
     parser.add_argument("--results-file", default=str(REPO_ROOT / "benchmarks" / "results" / "runs.jsonl"))
     parser.add_argument("--skip-playground", action="store_true")
     parser.add_argument("--no-symmetric-build", action="store_true")

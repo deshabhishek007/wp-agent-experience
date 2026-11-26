@@ -6,9 +6,9 @@ Starter WordPress Blueprint for local small businesses, service providers, and c
 
 - **Site Configuration:** Sets `blogname`, `blogdescription`, pretty permalinks (`/%postname%/`), and disables page comments by default.
 - **Gutenberg Block Pages:** Publishes `Home` (assigned as static front page via `show_on_front=page` and `page_on_front`), `Services`, `About`, `Contact`, and `Updates` (assigned as `page_for_posts`), plus an initial published announcement post.
-- **MU-Plugin (`/wordpress/wp-content/mu-plugins/wpax-business.php`):**
-  - Registers `GET /wp-json/wpax/v1/business-info` exposing opening hours, contact details, and services.
-  - Registers WordPress 6.9+ Abilities API category `wpax` and ability `wpax/get-business-info` (cleanly guarded with `function_exists()`).
+- **MU-Plugin (`/wordpress/wp-content/mu-plugins/wpai-business.php`):**
+  - Registers `GET /wp-json/wpai/v1/business-info` exposing opening hours, contact details, and services.
+  - Registers WordPress 6.9+ Abilities API category `wpai` and ability `wpai/get-business-info` (cleanly guarded with `function_exists()`).
 
 ## Usage
 

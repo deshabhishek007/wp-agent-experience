@@ -25,7 +25,7 @@ function walkUpFor(startDir: string, relativeTarget: string): string | null {
 }
 
 /**
- * Locate the WPAX repository root containing registry/wp-capabilities.json.
+ * Locate the WPAI repository root containing registry/wp-capabilities.json.
  */
 export function findRepoRoot(): string | null {
   const fromCwd = walkUpFor(process.cwd(), 'registry/wp-capabilities.json');

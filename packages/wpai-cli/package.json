@@ -6,7 +6,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/patilswapnilv/wp-agent-experience.git",
-    "directory": "packages/wpax-cli"
+    "directory": "packages/wpai-cli"
   },
   "homepage": "https://github.com/patilswapnilv/wp-agent-experience#readme",
   "bugs": {
@@ -19,8 +19,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "wpai": "dist/cli.js",
-    "wpax": "dist/cli.js"
+    "wpai": "dist/cli.js"
   },
   "files": [
     "dist"

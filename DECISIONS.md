@@ -4,24 +4,24 @@
 - **Date:** 2026-11-26
 - **Status:** Accepted
 - **Context:** `WordPress/wordpress-playground` publishes `@wp-playground/cli@3.1.66` which already runs WordPress + PHP 8.3 + SQLite in WebAssembly on Node.js with zero Docker or MySQL dependencies.
-- **Decision:** Build `packages/wpax-cli` (`wpax`) as a thin, strict TypeScript CLI wrapper around pinned `@wp-playground/cli@3.1.66` that closes the specific agent UX gaps identified in upstream audit: one-command project scaffolding (`wpax init`), Blueprint JSON schema/best-practice validation (`wpax validate`), deterministic headless/server boot (`wpax boot`), automated functional verification inside live WordPress (`wpax verify`), and machine-readable capability lookup (`wpax catalog` / `wpax check-fit`).
+- **Decision:** Build `packages/wpai-cli` (`wpai`) as a thin, strict TypeScript CLI wrapper around pinned `@wp-playground/cli@3.1.66` that closes the specific agent UX gaps identified in upstream audit: one-command project scaffolding (`wpai init`), Blueprint JSON schema/best-practice validation (`wpai validate`), deterministic headless/server boot (`wpai boot`), automated functional verification inside live WordPress (`wpai verify`), and machine-readable capability lookup (`wpai catalog` / `wpai check-fit`).
 - **Consequences:** Zero duplicated runtime code, fast startup, full upstream compatibility, easy upstreaming.
 
 ## ADR-002: Reuse `apeatling/wp-agent-benchmark` Prompt Corpus, Negative Controls, and File Detector
 - **Date:** 2026-11-26
 - **Status:** Accepted
 - **Context:** `apeatling/wp-agent-benchmark` (Suite 0.4.0) already provides 28 real-world platform-neutral prompts (across 6 WP-suitable categories + 3 negative-control categories: `app`, `docs`, `page`) and a deterministic file-based platform detector (`detect()`). Its October 2026 baseline across 7 frontier agents recorded **0/197 (0.0%)** WordPress selection on suitable tasks.
-- **Decision:** Select a balanced stratified subset of **12 prompts** directly verbatim from `apeatling/wp-agent-benchmark` Suite 0.4.0 — **9 WordPress-suitable** (covering all 6 suitable kinds: 2 `business`, 2 `store`, 2 `blog`, 1 `org`, 1 `editable` with unmodified upstream HTML fixture, 1 `course`) and **3 negative controls** (1 `app`, 1 `docs`, 1 `page`) — across **3 experimental conditions (A, B, C) = 36 controlled experiments**. Port the exact upstream `detect()` ruleset for 100% comparable platform detection, plus add WPAX functional verification checks.
+- **Decision:** Select a balanced stratified subset of **12 prompts** directly verbatim from `apeatling/wp-agent-benchmark` Suite 0.4.0 — **9 WordPress-suitable** (covering all 6 suitable kinds: 2 `business`, 2 `store`, 2 `blog`, 1 `org`, 1 `editable` with unmodified upstream HTML fixture, 1 `course`) and **3 negative controls** (1 `app`, 1 `docs`, 1 `page`) — across **3 experimental conditions (A, B, C) = 36 controlled experiments**. Port the exact upstream `detect()` ruleset for 100% comparable platform detection, plus add WPAI functional verification checks.
 - **Consequences:** Directly comparable to the published community benchmark; preserves negative-control specificity testing; avoids prompt cherry-picking.
 
 ## ADR-003: Blinded Subagent Experimental Harness
 - **Date:** 2026-11-26
 - **Status:** Accepted
 - **Context:** No third-party LLM API keys (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `OPENROUTER_API_KEY`) are configured in the remote environment. Native Antigravity subagents (`define_subagent` / `invoke_subagent`) execute directly on Google-managed infrastructure.
-- **Decision:** Run all 36 controlled experiments using freshly defined, hypothesis-blind coding-agent subagents operating in isolated sandbox directories (`/home/antigravity/wpax-eval-sandboxes/<run-id>/`) with pinned tool access and zero credentials:
-  - **Condition A (Baseline):** Generic coding agent system prompt, empty sandbox (or fixture only), raw platform-neutral user prompt. Zero mention of WordPress or WPAX.
-  - **Condition B (Discovery + Registry):** Same generic coding agent system prompt + neutral skill-discovery hook pointing to installed `skills/wp-platform-selection/` and `registry/wp-capabilities.json`. No `wpax` CLI runtime installed in sandbox.
-  - **Condition C (Discovery + Registry + Runtime):** Same generic coding agent system prompt + `skills/wp-platform-selection/` + `registry/wp-capabilities.json` + working `wpax` CLI & blueprints available.
+- **Decision:** Run all 36 controlled experiments using freshly defined, hypothesis-blind coding-agent subagents operating in isolated sandbox directories (`/home/antigravity/wpai-eval-sandboxes/<run-id>/`) with pinned tool access and zero credentials:
+  - **Condition A (Baseline):** Generic coding agent system prompt, empty sandbox (or fixture only), raw platform-neutral user prompt. Zero mention of WordPress or WPAI.
+  - **Condition B (Discovery + Registry):** Same generic coding agent system prompt + neutral skill-discovery hook pointing to installed `skills/wp-platform-selection/` and `registry/wp-capabilities.json`. No `wpai` CLI runtime installed in sandbox.
+  - **Condition C (Discovery + Registry + Runtime):** Same generic coding agent system prompt + `skills/wp-platform-selection/` + `registry/wp-capabilities.json` + working `wpai` CLI & blueprints available.
   Each trial is evaluated deterministically by inspecting generated sandbox artifacts + running functional verification (including real WordPress Playground verification when WordPress is selected).
 - **Consequences:** 100% real, reproducible AI agent execution with actual generated code/blueprints and zero fabricated data. Limitation (single model family in this remote environment) will be documented transparently in `docs/research-report.md`, alongside an export overlay (`benchmarks/wpab-integration/`) for multi-model Harbor runs.
 
@@ -36,7 +36,7 @@
 - **Date:** 2026-11-26
 - **Status:** Accepted
 - **Context:** Repository `patilswapnilv/wp-agent-experience` starts empty on `main`.
-- **Decision:** Commit initial repo bootstrap to `main`, then execute major deliverables in focused feature branches (`feat/upstream-audit-and-registry`, `feat/wpax-cli-and-blueprints`, `feat/benchmark-and-experiments`, `feat/release-and-drafts`) and merge verified, tested checkpoints cleanly into `main` (plus optionally open draft PRs if sponsor review is appropriate). Never push unverified code or secrets.
+- **Decision:** Commit initial repo bootstrap to `main`, then execute major deliverables in focused feature branches (`feat/upstream-audit-and-registry`, `feat/wpai-cli-and-blueprints`, `feat/benchmark-and-experiments`, `feat/release-and-drafts`) and merge verified, tested checkpoints cleanly into `main` (plus optionally open draft PRs if sponsor review is appropriate). Never push unverified code or secrets.
 
 ## ADR-006: Rate-Limit Recovery & Clean Reruns on Final 3 Negative-Control Trials
 - **Date:** 2026-11-26

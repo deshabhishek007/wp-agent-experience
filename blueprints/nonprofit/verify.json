@@ -7,11 +7,11 @@
     "volunteer"
   ],
   "required_post_types": [
-    "wpax_event"
+    "wpai_event"
   ],
   "required_rest_routes": [
     "/wp/v2/types",
-    "/wpax/v1/nonprofit-summary"
+    "/wpai/v1/nonprofit-summary"
   ],
   "require_abilities_api": true
 }

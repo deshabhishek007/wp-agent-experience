@@ -1,11 +1,11 @@
 # Online Course Studio
 
-Scaffolded by `wpax init course`.
+Scaffolded by `wpai init course`.
 
 ## Quick Start
 
 ```bash
 npm start
-wpax verify .
-wpax export . --out ./dist-wp
+wpai verify .
+wpai export . --out ./dist-wp
 ```

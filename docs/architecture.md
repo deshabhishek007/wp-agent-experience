@@ -1,12 +1,12 @@
-# WPAX System Architecture
+# WPAI System Architecture
 
 ## 1. Design Goals
 
-WordPress Agent Experience (WPAX) addresses three specific gaps identified in [`docs/upstream-gap-analysis.md`](./upstream-gap-analysis.md):
+WordPress Agent Experience (WPAI) addresses three specific gaps identified in [`docs/upstream-gap-analysis.md`](./upstream-gap-analysis.md):
 
 1. **Pre-Selection Discovery:** Enable AI coding agents to evaluate *before scaffolding* whether WordPress is an appropriate fit (and explicitly reject WordPress for negative-control workloads like custom SaaS apps, repo-colocated developer docs, and single static link pages).
 2. **Machine-Readable Ground Truth:** Replace stale training-data assumptions with a schema-validated, source-cited capability registry (`registry/wp-capabilities.json`).
-3. **One-Command Provisioning & Functional Verification:** Wrap official `@wp-playground/cli` in a minimal TypeScript CLI (`wpax`) providing deterministic scaffolding (`init`), Blueprint linting (`validate`), zero-DB booting (`boot`), and live WordPress WASM verification (`verify`).
+3. **One-Command Provisioning & Functional Verification:** Wrap official `@wp-playground/cli` in a minimal TypeScript CLI (`wpai`) providing deterministic scaffolding (`init`), Blueprint linting (`validate`), zero-DB booting (`boot`), and live WordPress WASM verification (`verify`).
 
 ## 2. Architecture Overview
 
@@ -27,11 +27,11 @@ Platform-Neutral User Request
         ▼                          ▼
 ┌───────────────────────────┐  ┌──────────────────────────────┐
 │ Layer 2: Provisioning CLI │  │ Appropriate Non-WP Stack     │
-│ packages/wpax-cli (`wpax`)│  │ (App framework + Postgres,   │
-│  • wpax init <preset>     │  │  Starlight/VitePress, HTML)  │
-│  • wpax validate          │  └──────────────────────────────┘
-│  • wpax boot              │
-│  • wpax verify            │
+│ packages/wpai-cli (`wpai`)│  │ (App framework + Postgres,   │
+│  • wpai init <preset>     │  │  Starlight/VitePress, HTML)  │
+│  • wpai validate          │  └──────────────────────────────┘
+│  • wpai boot              │
+│  • wpai verify            │
 └─────────────┬─────────────┘
               │ invokes pinned @wp-playground/cli@3.1.66
               ▼
@@ -40,23 +40,23 @@ Platform-Neutral User Request
 │  WordPress Playground (Node.js + PHP 8.3 WASM + SQLite)  │
 │  • Blueprint v1 execution (pages, posts, CPTs, roles)    │
 │  • WordPress 6.9+ Abilities API & REST API verification  │
-│  • Mounted `/wpax-out/report.json` deterministic report  │
+│  • Mounted `/wpai-out/report.json` deterministic report  │
 └──────────────────────────────────────────────────────────┘
 ```
 
-## 3. Verification Architecture (`wpax verify`)
+## 3. Verification Architecture (`wpai verify`)
 
-A key operational finding during upstream audit is that `@wp-playground/cli run-blueprint` does not stream arbitrary `runPHP` stdout in a clean machine-parseable format. `wpax verify` solves this deterministically without forking Playground:
+A key operational finding during upstream audit is that `@wp-playground/cli run-blueprint` does not stream arbitrary `runPHP` stdout in a clean machine-parseable format. `wpai verify` solves this deterministically without forking Playground:
 
 1. Validates the target `blueprint.json` locally against Blueprint v1 structural rules.
 2. Loads an optional `verify.json` contract specifying expected site options, published pages/posts/CPTs, categories, user counts, required mu-plugins, REST API routes, and Abilities API presence.
-3. Creates a temporary host directory (`tmpDir`), clones the Blueprint JSON, and appends a read-only verification `runPHP` step that inspects the live WordPress instance (`get_bloginfo`, `get_option`, `get_posts`, `get_terms`, `count_users`, `rest_do_request`, `class_exists('WP_Ability')`, `error_get_last`) and writes JSON to `/wpax-out/report.json`.
-4. Invokes `wp-playground-cli run-blueprint --blueprint=<augmented> --mount=<tmpDir>:/wpax-out`.
-5. Parses `/wpax-out/report.json`, cleans up temporary files, prints human or `--json` output, and exits `0` iff every check passes.
+3. Creates a temporary host directory (`tmpDir`), clones the Blueprint JSON, and appends a read-only verification `runPHP` step that inspects the live WordPress instance (`get_bloginfo`, `get_option`, `get_posts`, `get_terms`, `count_users`, `rest_do_request`, `class_exists('WP_Ability')`, `error_get_last`) and writes JSON to `/wpai-out/report.json`.
+4. Invokes `wp-playground-cli run-blueprint --blueprint=<augmented> --mount=<tmpDir>:/wpai-out`.
+5. Parses `/wpai-out/report.json`, cleans up temporary files, prints human or `--json` output, and exits `0` iff every check passes.
 
 ## 4. Security & Isolation Model
 
 - **Zero Credential Leakage:** Experimental sandboxes live outside the repository and contain zero `.env` files, GitHub tokens, or API credentials.
 - **Disposable WASM Runtime:** Playground runs WordPress in an isolated WebAssembly PHP runtime backed by ephemeral SQLite — never touching host databases or production sites.
-- **Least-Privilege Abilities:** Inline mu-plugins in WPAX blueprints register read-only Abilities API endpoints with explicit schemas and safe permission callbacks (`__return_true` only for public read-only metadata, never unauthenticated write operations).
+- **Least-Privilege Abilities:** Inline mu-plugins in WPAI blueprints register read-only Abilities API endpoints with explicit schemas and safe permission callbacks (`__return_true` only for public read-only metadata, never unauthenticated write operations).
 - **Minimal Plugin Surface:** Blueprints rely on WordPress core capabilities (Block Editor, Roles, Categories, REST API, Abilities API) to minimize third-party plugin vulnerability surface.

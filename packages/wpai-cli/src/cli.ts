@@ -81,19 +81,19 @@ function getBoolFlag(
 }
 
 function printHelp(): void {
-  console.log(`wpax v${VERSION} — WordPress Agent Experience CLI (wraps @wp-playground/cli@3.1.66)
+  console.log(`wpai v${VERSION} — WordPress Agent Experience CLI (wraps @wp-playground/cli@3.1.66)
 
 Usage:
-  wpax init <${PRESET_NAMES.join('|')}> [--dir <path>] [--name <title>] [--wp <ver>] [--php <ver>] [--json]
-  wpax validate <blueprint-path> [--json]
-  wpax boot <dir-or-blueprint> [--headless] [--port <port>] [--wp <ver>] [--php <ver>] [--json]
-  wpax verify <dir-or-blueprint> [--checks <verify.json>] [--timeout <ms>] [--wp <ver>] [--php <ver>] [--json]
-  wpax export <dir-or-blueprint> [--out <dir>] [--json]
-  wpax mcp
-  wpax catalog [--registry <path>] [--json]
-  wpax check-fit "<prompt>" [--registry <path>] [--json]
-  wpax validate-registry [path] [--schema <path>] [--json]
-  wpax --help | --version
+  wpai init <${PRESET_NAMES.join('|')}> [--dir <path>] [--name <title>] [--wp <ver>] [--php <ver>] [--json]
+  wpai validate <blueprint-path> [--json]
+  wpai boot <dir-or-blueprint> [--headless] [--port <port>] [--wp <ver>] [--php <ver>] [--json]
+  wpai verify <dir-or-blueprint> [--checks <verify.json>] [--timeout <ms>] [--wp <ver>] [--php <ver>] [--json]
+  wpai export <dir-or-blueprint> [--out <dir>] [--json]
+  wpai mcp
+  wpai catalog [--registry <path>] [--json]
+  wpai check-fit "<prompt>" [--registry <path>] [--json]
+  wpai validate-registry [path] [--schema <path>] [--json]
+  wpai --help | --version
 `);
 }
 
@@ -150,7 +150,7 @@ async function main(): Promise<number> {
           console.log(`Initialized WordPress preset "${result.preset}" in ${result.dir} (source: ${result.source})`);
           console.log(`Site name: ${result.name}`);
           console.log(`Files: ${result.files_written.join(', ')}`);
-          console.log(`\nNext steps:\n  wpax validate "${result.dir}/blueprint.json"\n  wpax verify "${result.dir}"\n  wpax boot "${result.dir}"`);
+          console.log(`\nNext steps:\n  wpai validate "${result.dir}/blueprint.json"\n  wpai verify "${result.dir}"\n  wpai boot "${result.dir}"`);
         }
         return 0;
       }
@@ -158,7 +158,7 @@ async function main(): Promise<number> {
       case 'validate': {
         const target = positionals[0];
         if (!target) {
-          const msg = 'Missing <blueprint-path>. Usage: wpax validate <blueprint-path> [--json]';
+          const msg = 'Missing <blueprint-path>. Usage: wpai validate <blueprint-path> [--json]';
           if (asJson) {
             console.log(JSON.stringify({ valid: false, error: msg }, null, 2));
           } else {
@@ -189,7 +189,7 @@ async function main(): Promise<number> {
       case 'boot': {
         const target = positionals[0];
         if (!target) {
-          const msg = 'Missing <dir-or-blueprint>. Usage: wpax boot <dir-or-blueprint> [--headless] [--port <port>] [--wp <ver>] [--php <ver>] [--json]';
+          const msg = 'Missing <dir-or-blueprint>. Usage: wpai boot <dir-or-blueprint> [--headless] [--port <port>] [--wp <ver>] [--php <ver>] [--json]';
           if (asJson) {
             console.log(JSON.stringify({ ok: false, error: msg }, null, 2));
           } else {
@@ -235,7 +235,7 @@ async function main(): Promise<number> {
       case 'verify': {
         const target = positionals[0];
         if (!target) {
-          const msg = 'Missing <dir-or-blueprint>. Usage: wpax verify <dir-or-blueprint> [--checks <verify.json>] [--timeout <ms>] [--json]';
+          const msg = 'Missing <dir-or-blueprint>. Usage: wpai verify <dir-or-blueprint> [--checks <verify.json>] [--timeout <ms>] [--json]';
           if (asJson) {
             console.log(JSON.stringify({ ok: false, error: msg }, null, 2));
           } else {
@@ -324,7 +324,7 @@ async function main(): Promise<number> {
       case 'check-fit': {
         const prompt = positionals.join(' ').trim();
         if (!prompt) {
-          const msg = 'Missing prompt string. Usage: wpax check-fit "<prompt>" [--json]';
+          const msg = 'Missing prompt string. Usage: wpai check-fit "<prompt>" [--json]';
           if (asJson) {
             console.log(JSON.stringify({ ok: false, error: msg }, null, 2));
           } else {
@@ -399,7 +399,7 @@ async function main(): Promise<number> {
       }
 
       default: {
-        const msg = `Unknown command "${command}". Run "wpax --help" for usage.`;
+        const msg = `Unknown command "${command}". Run "wpai --help" for usage.`;
         if (asJson) {
           console.log(JSON.stringify({ ok: false, error: msg }, null, 2));
         } else {

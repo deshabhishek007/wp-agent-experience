@@ -9,7 +9,7 @@ import { evaluateFit, loadRegistry } from './registry.js';
 import { PRESET_NAMES } from './types.js';
 import { validateBlueprintFile } from './validator.js';
 
-const SERVER_NAME = 'wpax';
+const SERVER_NAME = 'wpai';
 const SERVER_VERSION = '0.2.0';
 const SUPPORTED_PROTOCOL_VERSION = '2024-11-05';
 
@@ -33,7 +33,7 @@ interface JsonRpcResponse {
 
 const MCP_TOOLS = [
   {
-    name: 'wpax_check_fit',
+    name: 'wpai_check_fit',
     description:
       'Evaluate a plain-English website or app request against the neutral WordPress capability registry. Returns whether WordPress is recommended, contested, or not recommended (with preferred non-WP alternatives for negative controls).',
     inputSchema: {
@@ -48,7 +48,7 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'wpax_catalog',
+    name: 'wpai_catalog',
     description:
       'List available WordPress Playground starter presets, WordPress-suitable domains, negative-control domains, and core WordPress capabilities.',
     inputSchema: {
@@ -57,7 +57,7 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'wpax_init',
+    name: 'wpai_init',
     description:
       'Scaffold a reproducible WordPress Playground project (blueprint.json, verify.json, package.json, README.md) from a verified starter preset.',
     inputSchema: {
@@ -89,7 +89,7 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'wpax_validate',
+    name: 'wpai_validate',
     description:
       'Validate a WordPress Playground Blueprint v1 JSON file against strict schema and step rules.',
     inputSchema: {
@@ -104,7 +104,7 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'wpax_verify',
+    name: 'wpai_verify',
     description:
       'Boot and functionally verify a WordPress Playground blueprint (auto-mounting sibling wp-content/themes, plugins, and mu-plugins) and return a structured JSON verification report.',
     inputSchema: {
@@ -123,7 +123,7 @@ const MCP_TOOLS = [
     },
   },
   {
-    name: 'wpax_export',
+    name: 'wpai_export',
     description:
       'Export a WordPress Playground project into a production-ready deployable bundle (wp-content/, WP-CLI setup.sh, and DEPLOY.md checklist).',
     inputSchema: {
@@ -145,13 +145,13 @@ const MCP_TOOLS = [
 
 const MCP_RESOURCES = [
   {
-    uri: 'wpax://registry/capabilities',
+    uri: 'wpai://registry/capabilities',
     name: 'WordPress Capability Registry',
     description: 'Machine-readable WordPress platform-fit, negative-control, and core capability registry.',
     mimeType: 'application/json',
   },
   {
-    uri: 'wpax://skill/platform-selection',
+    uri: 'wpai://skill/platform-selection',
     name: 'WordPress Platform Selection Skill',
     description: 'Neutral decision matrix and evidence facts for choosing between WordPress and non-WordPress stacks.',
     mimeType: 'text/markdown',
@@ -165,7 +165,7 @@ async function handleToolCall(
   try {
     let payload: unknown;
     switch (name) {
-      case 'wpax_check_fit': {
+      case 'wpai_check_fit': {
         const prompt = typeof args.prompt === 'string' ? args.prompt.trim() : '';
         if (!prompt) {
           throw new Error('Missing required string argument "prompt".');
@@ -175,7 +175,7 @@ async function handleToolCall(
         break;
       }
 
-      case 'wpax_catalog': {
+      case 'wpai_catalog': {
         const { registry, path: registryPath } = loadRegistry();
         payload = {
           registry_path: registryPath,
@@ -200,7 +200,7 @@ async function handleToolCall(
         break;
       }
 
-      case 'wpax_init': {
+      case 'wpai_init': {
         const preset = typeof args.preset === 'string' ? args.preset : '';
         const dir = typeof args.dir === 'string' ? args.dir : '';
         if (!isValidPreset(preset)) {
@@ -219,7 +219,7 @@ async function handleToolCall(
         break;
       }
 
-      case 'wpax_validate': {
+      case 'wpai_validate': {
         const bpPath = typeof args.blueprint_path === 'string' ? args.blueprint_path : '';
         if (!bpPath) {
           throw new Error('Missing required string argument "blueprint_path".');
@@ -228,7 +228,7 @@ async function handleToolCall(
         break;
       }
 
-      case 'wpax_verify': {
+      case 'wpai_verify': {
         const target = typeof args.target === 'string' ? args.target : '';
         if (!target) {
           throw new Error('Missing required string argument "target".');
@@ -238,7 +238,7 @@ async function handleToolCall(
         break;
       }
 
-      case 'wpax_export': {
+      case 'wpai_export': {
         const target = typeof args.target === 'string' ? args.target : '';
         const outDir = typeof args.out_dir === 'string' ? args.out_dir : '';
         if (!target || !outDir) {
@@ -266,7 +266,7 @@ async function handleToolCall(
 }
 
 function handleResourceRead(uri: string): { contents: Array<{ uri: string; mimeType: string; text: string }> } {
-  if (uri === 'wpax://registry/capabilities') {
+  if (uri === 'wpai://registry/capabilities') {
     const { registry } = loadRegistry();
     return {
       contents: [
@@ -278,10 +278,10 @@ function handleResourceRead(uri: string): { contents: Array<{ uri: string; mimeT
       ],
     };
   }
-  if (uri === 'wpax://skill/platform-selection') {
+  if (uri === 'wpai://skill/platform-selection') {
     const repoRoot = findRepoRoot();
     if (!repoRoot) {
-      throw new Error('Repository root not found for wpax://skill/platform-selection');
+      throw new Error('Repository root not found for wpai://skill/platform-selection');
     }
     const skillPath = path.join(repoRoot, 'skills', 'wp-platform-selection', 'SKILL.md');
     if (!fs.existsSync(skillPath)) {

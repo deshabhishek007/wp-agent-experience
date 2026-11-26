@@ -2,7 +2,7 @@
   "suite_source": "apeatling/wp-agent-benchmark",
   "suite_path": "benchmarks/choose/requests.toml",
   "suite_version": "0.4.0",
-  "description": "Complete 16-prompt held-out complement (10 WordPress-suitable + 6 negative controls) from apeatling/wp-agent-benchmark Suite 0.4.0 that were NOT used during development of WPAX skills, registry, or check-fit heuristics. Prompts with eval_subset=true form a 9-prompt stratified subset (1 per kind across all 9 kinds: 6 suitable + 3 controls) for live multi-arm agent experiments.",
+  "description": "Complete 16-prompt held-out complement (10 WordPress-suitable + 6 negative controls) from apeatling/wp-agent-benchmark Suite 0.4.0 that were NOT used during development of WPAI skills, registry, or check-fit heuristics. Prompts with eval_subset=true form a 9-prompt stratified subset (1 per kind across all 9 kinds: 6 suitable + 3 controls) for live multi-arm agent experiments.",
   "counts": {
     "total": 16,
     "suitable": 10,

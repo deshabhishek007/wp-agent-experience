@@ -42,7 +42,7 @@ function runCli(
   }
 }
 
-describe('wpax validate-registry', () => {
+describe('wpai validate-registry', () => {
   it('validates registry/wp-capabilities.json against Draft 2020-12 schema', () => {
     const result = validateRegistry();
     assert.equal(result.valid, true, JSON.stringify(result.errors, null, 2));
@@ -55,7 +55,7 @@ describe('wpax validate-registry', () => {
     const parsedOk = JSON.parse(okRes.stdout) as { valid: boolean };
     assert.equal(parsedOk.valid, true);
 
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-bad-reg-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-bad-reg-'));
     try {
       const badPath = path.join(tmpDir, 'bad-registry.json');
       fs.writeFileSync(badPath, JSON.stringify({ registry_version: 'not-semver' }), 'utf8');
@@ -70,7 +70,7 @@ describe('wpax validate-registry', () => {
   });
 });
 
-describe('wpax validate (Blueprint v1 validator)', () => {
+describe('wpai validate (Blueprint v1 validator)', () => {
   it('accepts a valid Blueprint v1 document', () => {
     const validBp = {
       $schema: 'https://playground.wordpress.net/blueprint-schema.json',
@@ -178,7 +178,7 @@ describe('wpax validate (Blueprint v1 validator)', () => {
   });
 
   it('returns exit 1 via CLI on invalid JSON file', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-val-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-val-'));
     try {
       const badJson = path.join(tmpDir, 'blueprint.json');
       fs.writeFileSync(badJson, '{ invalid json', 'utf8');
@@ -193,10 +193,10 @@ describe('wpax validate (Blueprint v1 validator)', () => {
   });
 });
 
-describe('wpax init (all 3 presets)', () => {
+describe('wpai init (all 3 presets)', () => {
   for (const preset of PRESET_NAMES) {
     it(`scaffolds "${preset}" into a fresh temp directory with valid blueprint & custom options`, () => {
-      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `wpax-init-${preset}-`));
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), `wpai-init-${preset}-`));
       try {
         const customName = `Custom ${preset} Site`;
         const res = initProject({
@@ -241,7 +241,7 @@ describe('wpax init (all 3 presets)', () => {
           fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8')
         ) as { scripts: Record<string, string> };
         assert.ok(pkgJson.scripts.start?.includes('@wp-playground/cli'));
-        assert.ok(pkgJson.scripts.verify?.includes('wpax verify'));
+        assert.ok(pkgJson.scripts.verify?.includes('wpai verify'));
       } finally {
         fs.rmSync(tmpDir, { recursive: true, force: true });
       }
@@ -249,7 +249,7 @@ describe('wpax init (all 3 presets)', () => {
   }
 
   it('works from an arbitrary directory outside the repository via CLI', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-outside-'));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-outside-'));
     try {
       const res = runCli(
         ['init', 'small-business', '--dir', tmpDir, '--name', 'Corner Bakery', '--json'],
@@ -266,7 +266,7 @@ describe('wpax init (all 3 presets)', () => {
   });
 });
 
-describe('wpax check-fit & catalog', () => {
+describe('wpai check-fit & catalog', () => {
   const { registry } = loadRegistry();
 
   it('recommends WordPress for suitable prompts with matching presets', () => {
@@ -346,7 +346,7 @@ describe('wpax check-fit & catalog', () => {
     assert.equal(fit.wordpress_fit, null);
   });
 
-  it('outputs valid JSON from wpax catalog --json and wpax check-fit --json', () => {
+  it('outputs valid JSON from wpai catalog --json and wpai check-fit --json', () => {
     const cat = runCli(['catalog', '--json']);
     assert.equal(cat.code, 0, cat.stderr);
     const parsedCat = JSON.parse(cat.stdout) as { registry_version: string };
@@ -360,15 +360,15 @@ describe('wpax check-fit & catalog', () => {
   });
 });
 
-describe('wpax export (production handoff bridge)', () => {
+describe('wpai export (production handoff bridge)', () => {
   it('exports wp-content mu-plugins, WP-CLI setup.sh, and DEPLOY.md from a scaffolded project', () => {
-    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-src-'));
-    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-out-'));
+    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-exp-src-'));
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-exp-out-'));
     try {
       initProject({ preset: 'nonprofit', dir: srcDir, name: 'Harbor Rescue' });
       const res = exportForProduction({ target: srcDir, outDir });
       assert.equal(res.ok, true);
-      assert.ok(res.wp_content_files.some((f) => f.endsWith('wpax-nonprofit.php')));
+      assert.ok(res.wp_content_files.some((f) => f.endsWith('wpai-nonprofit.php')));
       assert.ok(res.wp_cli_commands.some((c) => c.includes('blogname') && c.includes('Harbor Rescue')));
       assert.ok(fs.existsSync(path.join(outDir, 'setup.sh')));
       assert.ok(fs.existsSync(path.join(outDir, 'DEPLOY.md')));
@@ -379,9 +379,9 @@ describe('wpax export (production handoff bridge)', () => {
     }
   });
 
-  it('works via CLI wpax export --json', () => {
-    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-cli-src-'));
-    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-cli-out-'));
+  it('works via CLI wpai export --json', () => {
+    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-exp-cli-src-'));
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-exp-cli-out-'));
     try {
       initProject({ preset: 'course', dir: srcDir, name: 'Pottery Studio' });
       const res = runCli(['export', srcDir, '--out', outDir, '--json']);
@@ -396,7 +396,7 @@ describe('wpax export (production handoff bridge)', () => {
   });
 });
 
-describe('wpax mcp (MCP JSON-RPC 2.0 server)', () => {
+describe('wpai mcp (MCP JSON-RPC 2.0 server)', () => {
   it('handles initialize, tools/list, tools/call (check_fit & catalog), and resources/read', async () => {
     const initResp = await handleMcpRequest({
       jsonrpc: '2.0',
@@ -406,20 +406,20 @@ describe('wpax mcp (MCP JSON-RPC 2.0 server)', () => {
     });
     assert.ok(initResp && !initResp.error);
     const initRes = initResp.result as { serverInfo: { name: string }; protocolVersion: string };
-    assert.equal(initRes.serverInfo.name, 'wpax');
+    assert.equal(initRes.serverInfo.name, 'wpai');
 
     const listResp = await handleMcpRequest({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     assert.ok(listResp && !listResp.error);
     const tools = (listResp.result as { tools: Array<{ name: string }> }).tools;
     assert.equal(tools.length, 6);
-    assert.ok(tools.some((t) => t.name === 'wpax_check_fit'));
-    assert.ok(tools.some((t) => t.name === 'wpax_export'));
+    assert.ok(tools.some((t) => t.name === 'wpai_check_fit'));
+    assert.ok(tools.some((t) => t.name === 'wpai_export'));
 
     const fitResp = await handleMcpRequest({
       jsonrpc: '2.0',
       id: 3,
       method: 'tools/call',
-      params: { name: 'wpax_check_fit', arguments: { prompt: 'website for my bakery' } },
+      params: { name: 'wpai_check_fit', arguments: { prompt: 'website for my bakery' } },
     });
     assert.ok(fitResp && !fitResp.error);
     const fitCall = fitResp.result as { isError: boolean; content: Array<{ text: string }> };
@@ -432,7 +432,7 @@ describe('wpax mcp (MCP JSON-RPC 2.0 server)', () => {
       jsonrpc: '2.0',
       id: 4,
       method: 'tools/call',
-      params: { name: 'wpax_catalog', arguments: {} },
+      params: { name: 'wpai_catalog', arguments: {} },
     });
     assert.ok(catResp && !catResp.error);
     const catJson = JSON.parse(
@@ -444,7 +444,7 @@ describe('wpax mcp (MCP JSON-RPC 2.0 server)', () => {
       jsonrpc: '2.0',
       id: 5,
       method: 'resources/read',
-      params: { uri: 'wpax://registry/capabilities' },
+      params: { uri: 'wpai://registry/capabilities' },
     });
     assert.ok(resRead && !resRead.error);
     const contents = (resRead.result as { contents: Array<{ mimeType: string; text: string }> }).contents;

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Statistical analysis harness for WPAX controlled benchmark experiments.
+"""Statistical analysis harness for WPAI controlled benchmark experiments.
 
 Reads experiment run records from `benchmarks/results/runs.jsonl` and computes:
   - Per-condition WordPress selection rate on WP-suitable tasks (with Wilson 95% CI)
@@ -257,7 +257,7 @@ def _fmt_ci(ci: list[float]) -> str:
 def format_markdown(summary: dict[str, Any]) -> str:
     """Render a publication-ready Markdown summary table."""
     lines: list[str] = []
-    lines.append("# WPAX Controlled Experiment Summary")
+    lines.append("# WPAI Controlled Experiment Summary")
     lines.append("")
     if summary["total_runs"] == 0:
         lines.append("_No experiment runs recorded yet._")
@@ -310,7 +310,7 @@ def format_markdown(summary: dict[str, Any]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Compute statistical summary for WPAX benchmark runs.")
+    parser = argparse.ArgumentParser(description="Compute statistical summary for WPAI benchmark runs.")
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT, help="Path to runs.jsonl file.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Path to write JSON summary report.")
     parser.add_argument("--no-write", action="store_true", help="Do not write summary.json to disk.")

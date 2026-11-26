@@ -11,9 +11,9 @@ Multi-author blog and local news publication starter (**Rivertown Dispatch**) wi
   - `david_author` (`author`)
   - `priya_contributor` (`contributor`)
 - **Published Content:** Seeds 4 Gutenberg block-formatted articles distributed across authors and categories, plus `About` and `Editorial Policy` pages.
-- **MU-Plugin (`/wordpress/wp-content/mu-plugins/wpax-publishing.php`):**
-  - Registers `GET /wp-json/wpax/v1/editorial-summary`.
-  - Registers WordPress 6.9+ Abilities API ability `wpax/editorial-summary` (cleanly guarded with `function_exists()`).
+- **MU-Plugin (`/wordpress/wp-content/mu-plugins/wpai-publishing.php`):**
+  - Registers `GET /wp-json/wpai/v1/editorial-summary`.
+  - Registers WordPress 6.9+ Abilities API ability `wpai/editorial-summary` (cleanly guarded with `function_exists()`).
 
 ## Usage
 

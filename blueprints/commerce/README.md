@@ -7,11 +7,11 @@ Reproducible online store starter (**Northline Bike Parts**) packaged in two var
 ### 1. `blueprint.json` (Fast Deterministic Store — Default)
 
 - Zero external plugin download flakiness; boots cleanly in WordPress Playground with SQLite.
-- Installs `/wordpress/wp-content/mu-plugins/wpax-store.php`:
-  - Registers `wpax_product` custom post type (`show_in_rest: true`, route `/wp/v2/wpax_product`).
-  - Exposes structured product meta fields: `wpax_sku`, `wpax_price`, `wpax_stock_qty`, and `wpax_weight_kg`.
-  - Registers `GET/POST /wp-json/wpax/v1/shipping-quote?weight_kg=<kg>` for tiered weight-based shipping quotes.
-  - Registers WordPress 6.9+ Abilities API ability `wpax/list-products` (guarded with `function_exists()`).
+- Installs `/wordpress/wp-content/mu-plugins/wpai-store.php`:
+  - Registers `wpai_product` custom post type (`show_in_rest: true`, route `/wp/v2/wpai_product`).
+  - Exposes structured product meta fields: `wpai_sku`, `wpai_price`, `wpai_stock_qty`, and `wpai_weight_kg`.
+  - Registers `GET/POST /wp-json/wpai/v1/shipping-quote?weight_kg=<kg>` for tiered weight-based shipping quotes.
+  - Registers WordPress 6.9+ Abilities API ability `wpai/list-products` (guarded with `function_exists()`).
 - Publishes `Shop` (front page), `Catalog`, `Cart`, `Shipping`, and `Contact` pages, and seeds 4 stocked products with weights.
 
 ### 2. `blueprint.woocommerce.json` (Full Upstream WooCommerce)
@@ -30,4 +30,4 @@ npx -y @wp-playground/cli@3.1.66 run-blueprint --blueprint=blueprints/commerce/b
 
 ## Verification Spec
 
-See `verify.json` for automated checks covering pages, custom post type registration, minimum product count (`4`), REST routes (`/wp/v2/wpax_product`, `/wpax/v1/shipping-quote`), and Abilities API registration.
+See `verify.json` for automated checks covering pages, custom post type registration, minimum product count (`4`), REST routes (`/wp/v2/wpai_product`, `/wpai/v1/shipping-quote`), and Abilities API registration.

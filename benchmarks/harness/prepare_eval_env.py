@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare isolated, credential-free experimental environments and sandboxes for WPAX A/B/C runs."""
+"""Prepare isolated, credential-free experimental environments and sandboxes for WPAI A/B/C runs."""
 from __future__ import annotations
 
 import json
@@ -9,9 +9,9 @@ import stat
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ENV_ROOT = Path("/home/antigravity/wpax-eval-env")
-SANDBOX_ROOT = Path("/home/antigravity/wpax-eval-sandboxes")
-WPAX_BIN_DIR = Path("/tmp/wpax-bin")
+ENV_ROOT = Path("/home/antigravity/wpai-eval-env")
+SANDBOX_ROOT = Path("/home/antigravity/wpai-eval-sandboxes")
+WPAI_BIN_DIR = Path("/tmp/wpai-bin")
 
 
 def main() -> None:
@@ -31,15 +31,15 @@ def main() -> None:
         ENV_ROOT / "registry" / "wp-capabilities.json",
     )
 
-    # 2. Expose clean wpax wrapper binary for Condition C only
-    WPAX_BIN_DIR.mkdir(parents=True, exist_ok=True)
-    wpax_wrapper = WPAX_BIN_DIR / "wpax"
-    cli_js = REPO_ROOT / "packages" / "wpax-cli" / "dist" / "cli.js"
-    wpax_wrapper.write_text(
+    # 2. Expose clean wpai wrapper binary for Condition C only
+    WPAI_BIN_DIR.mkdir(parents=True, exist_ok=True)
+    wpai_wrapper = WPAI_BIN_DIR / "wpai"
+    cli_js = REPO_ROOT / "packages" / "wpai-cli" / "dist" / "cli.js"
+    wpai_wrapper.write_text(
         f"#!/usr/bin/env bash\nexec node \"{cli_js}\" \"$@\"\n",
         encoding="utf-8",
     )
-    wpax_wrapper.chmod(wpax_wrapper.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    wpai_wrapper.chmod(wpai_wrapper.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     # 3. Create 36 fresh isolated sandbox directories (A, B, C x 12 prompts)
     if SANDBOX_ROOT.exists():
@@ -61,7 +61,7 @@ def main() -> None:
         "ok": True,
         "env_root": str(ENV_ROOT),
         "sandbox_root": str(SANDBOX_ROOT),
-        "wpax_bin": str(wpax_wrapper),
+        "wpai_bin": str(wpai_wrapper),
         "sandboxes_created": created,
     }, indent=2))
 

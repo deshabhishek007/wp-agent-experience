@@ -1,8 +1,8 @@
 {
-  "generated_from": "/home/antigravity/wpax-eval-sandboxes (excludes node_modules, build output, sqlite, lockfiles)",
+  "generated_from": "/home/antigravity/wpai-eval-sandboxes (excludes node_modules, build output, sqlite, lockfiles)",
   "runs": [
     {
-      "run_id": "WPAX-A-business-1",
+      "run_id": "WPAI-A-business-1",
       "condition": "A",
       "prompt_id": "business-1",
       "control": false,
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-business-3",
+      "run_id": "WPAI-A-business-3",
       "condition": "A",
       "prompt_id": "business-3",
       "control": false,
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-store-1",
+      "run_id": "WPAI-A-store-1",
       "condition": "A",
       "prompt_id": "store-1",
       "control": false,
@@ -68,7 +68,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-store-3",
+      "run_id": "WPAI-A-store-3",
       "condition": "A",
       "prompt_id": "store-3",
       "control": false,
@@ -92,7 +92,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-blog-2",
+      "run_id": "WPAI-A-blog-2",
       "condition": "A",
       "prompt_id": "blog-2",
       "control": false,
@@ -129,7 +129,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-blog-3",
+      "run_id": "WPAI-A-blog-3",
       "condition": "A",
       "prompt_id": "blog-3",
       "control": false,
@@ -170,7 +170,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-org-2",
+      "run_id": "WPAI-A-org-2",
       "condition": "A",
       "prompt_id": "org-2",
       "control": false,
@@ -203,7 +203,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-editable-2",
+      "run_id": "WPAI-A-editable-2",
       "condition": "A",
       "prompt_id": "editable-2",
       "control": false,
@@ -232,7 +232,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-course-1",
+      "run_id": "WPAI-A-course-1",
       "condition": "A",
       "prompt_id": "course-1",
       "control": false,
@@ -254,7 +254,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-docs-1",
+      "run_id": "WPAI-A-docs-1",
       "condition": "A",
       "prompt_id": "docs-1",
       "control": true,
@@ -283,7 +283,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-app-3",
+      "run_id": "WPAI-A-app-3",
       "condition": "A",
       "prompt_id": "app-3",
       "control": true,
@@ -320,7 +320,7 @@
       ]
     },
     {
-      "run_id": "WPAX-A-page-2",
+      "run_id": "WPAI-A-page-2",
       "condition": "A",
       "prompt_id": "page-2",
       "control": true,
@@ -338,7 +338,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-business-1",
+      "run_id": "WPAI-B-business-1",
       "condition": "B",
       "prompt_id": "business-1",
       "control": false,
@@ -362,7 +362,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-business-3",
+      "run_id": "WPAI-B-business-3",
       "condition": "B",
       "prompt_id": "business-3",
       "control": false,
@@ -389,7 +389,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-store-1",
+      "run_id": "WPAI-B-store-1",
       "condition": "B",
       "prompt_id": "store-1",
       "control": false,
@@ -413,7 +413,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-store-3",
+      "run_id": "WPAI-B-store-3",
       "condition": "B",
       "prompt_id": "store-3",
       "control": false,
@@ -437,7 +437,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-blog-2",
+      "run_id": "WPAI-B-blog-2",
       "condition": "B",
       "prompt_id": "blog-2",
       "control": false,
@@ -464,7 +464,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-blog-3",
+      "run_id": "WPAI-B-blog-3",
       "condition": "B",
       "prompt_id": "blog-3",
       "control": false,
@@ -491,7 +491,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-org-2",
+      "run_id": "WPAI-B-org-2",
       "condition": "B",
       "prompt_id": "org-2",
       "control": false,
@@ -517,7 +517,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-editable-2",
+      "run_id": "WPAI-B-editable-2",
       "condition": "B",
       "prompt_id": "editable-2",
       "control": false,
@@ -548,7 +548,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-course-1",
+      "run_id": "WPAI-B-course-1",
       "condition": "B",
       "prompt_id": "course-1",
       "control": false,
@@ -574,7 +574,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-docs-1",
+      "run_id": "WPAI-B-docs-1",
       "condition": "B",
       "prompt_id": "docs-1",
       "control": true,
@@ -596,7 +596,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-app-3",
+      "run_id": "WPAI-B-app-3",
       "condition": "B",
       "prompt_id": "app-3",
       "control": true,
@@ -624,7 +624,7 @@
       ]
     },
     {
-      "run_id": "WPAX-B-page-2",
+      "run_id": "WPAI-B-page-2",
       "condition": "B",
       "prompt_id": "page-2",
       "control": true,
@@ -641,7 +641,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-business-1",
+      "run_id": "WPAI-C-business-1",
       "condition": "C",
       "prompt_id": "business-1",
       "control": false,
@@ -658,7 +658,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-business-3",
+      "run_id": "WPAI-C-business-3",
       "condition": "C",
       "prompt_id": "business-3",
       "control": false,
@@ -672,11 +672,11 @@
         "blueprint.json",
         "package.json",
         "verify.json",
-        "wp-content/mu-plugins/wpax-business.php"
+        "wp-content/mu-plugins/wpai-business.php"
       ]
     },
     {
-      "run_id": "WPAX-C-store-1",
+      "run_id": "WPAI-C-store-1",
       "condition": "C",
       "prompt_id": "store-1",
       "control": false,
@@ -691,11 +691,11 @@
         "blueprint.woocommerce.json",
         "package.json",
         "verify.json",
-        "wp-content/mu-plugins/wpax-store.php"
+        "wp-content/mu-plugins/wpai-store.php"
       ]
     },
     {
-      "run_id": "WPAX-C-store-3",
+      "run_id": "WPAI-C-store-3",
       "condition": "C",
       "prompt_id": "store-3",
       "control": false,
@@ -711,11 +711,11 @@
         "catalog-import-sample.csv",
         "package.json",
         "verify.json",
-        "wp-content/mu-plugins/wpax-store.php"
+        "wp-content/mu-plugins/wpai-store.php"
       ]
     },
     {
-      "run_id": "WPAX-C-blog-2",
+      "run_id": "WPAI-C-blog-2",
       "condition": "C",
       "prompt_id": "blog-2",
       "control": false,
@@ -733,7 +733,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-blog-3",
+      "run_id": "WPAI-C-blog-3",
       "condition": "C",
       "prompt_id": "blog-3",
       "control": false,
@@ -750,7 +750,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-org-2",
+      "run_id": "WPAI-C-org-2",
       "condition": "C",
       "prompt_id": "org-2",
       "control": false,
@@ -764,11 +764,11 @@
         "blueprint.json",
         "package.json",
         "verify.json",
-        "wp-content/mu-plugins/wpax-dog-rescue.php"
+        "wp-content/mu-plugins/wpai-dog-rescue.php"
       ]
     },
     {
-      "run_id": "WPAX-C-editable-2",
+      "run_id": "WPAI-C-editable-2",
       "condition": "C",
       "prompt_id": "editable-2",
       "control": false,
@@ -787,7 +787,7 @@
         "menu.html",
         "package.json",
         "verify.json",
-        "wp-content/mu-plugins/wpax-business.php",
+        "wp-content/mu-plugins/wpai-business.php",
         "wp-content/themes/bean-there-cafe/assets/counter.svg",
         "wp-content/themes/bean-there-cafe/functions.php",
         "wp-content/themes/bean-there-cafe/parts/footer.html",
@@ -800,7 +800,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-course-1",
+      "run_id": "WPAI-C-course-1",
       "condition": "C",
       "prompt_id": "course-1",
       "control": false,
@@ -819,7 +819,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-docs-1",
+      "run_id": "WPAI-C-docs-1",
       "condition": "C",
       "prompt_id": "docs-1",
       "control": true,
@@ -844,7 +844,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-page-2",
+      "run_id": "WPAI-C-page-2",
       "condition": "C",
       "prompt_id": "page-2",
       "control": true,
@@ -861,7 +861,7 @@
       ]
     },
     {
-      "run_id": "WPAX-C-app-3",
+      "run_id": "WPAI-C-app-3",
       "condition": "C",
       "prompt_id": "app-3",
       "control": true,

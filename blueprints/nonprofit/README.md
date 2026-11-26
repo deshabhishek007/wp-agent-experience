@@ -1,11 +1,11 @@
 # Community Nonprofit Starter
 
-Scaffolded by `wpax init nonprofit`.
+Scaffolded by `wpai init nonprofit`.
 
 ## Quick Start
 
 ```bash
 npm start
-wpax verify .
-wpax export . --out ./dist-wp
+wpai verify .
+wpai export . --out ./dist-wp
 ```

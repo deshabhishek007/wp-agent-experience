@@ -9,7 +9,7 @@
 - [x] **Deliverable 1:** [`docs/upstream-gap-analysis.md`](./docs/upstream-gap-analysis.md) — Complete technical audit of all 7 upstream repos/docs + `wordpress.org/llms.txt` with exact issue/commit/metric citations.
 - [x] **Deliverable 2:** [`skills/wp-platform-selection/`](./skills/wp-platform-selection/) — Portable `SKILL.md`, `references/decision-matrix.md`, `references/evidence-facts.md`, and zero-dependency `scripts/evaluate-fit.mjs`.
 - [x] **Deliverable 3:** [`registry/wp-capabilities.json`](./registry/wp-capabilities.json) + [`registry/schema/wp-capabilities.schema.json`](./registry/schema/wp-capabilities.schema.json) — Validated against JSON Schema Draft 2020-12.
-- [x] **Deliverable 4:** [`packages/wpax-cli/`](./packages/wpax-cli/) — Minimal TypeScript CLI wrapping pinned `@wp-playground/cli@3.1.66` (`init`, `validate`, `boot`, `verify`, `catalog`, `check-fit`, `validate-registry`, all supporting `--json`).
+- [x] **Deliverable 4:** [`packages/wpai-cli/`](./packages/wpai-cli/) — Minimal TypeScript CLI wrapping pinned `@wp-playground/cli@3.1.66` (`init`, `validate`, `boot`, `verify`, `catalog`, `check-fit`, `validate-registry`, all supporting `--json`).
 - [x] **Deliverable 5:** [`blueprints/`](./blueprints/) — Reproducible `small-business`, `commerce` (deterministic + full WooCommerce variant), and `publishing` blueprints validated and booted in live WordPress Playground (`WP 7.1.5`, `PHP 8.3.36`).
 - [x] **Deliverable 6:** Functional verification tests passing (`19/19` Node unit tests + `4/4` live WordPress Playground end-to-end integration tests + `19/19` Python harness unit tests).
 - [x] **Deliverable 7:** [`benchmarks/`](./benchmarks/) — `apeatling/wp-agent-benchmark` integration (`12` verbatim `Suite 0.4.0` prompts, unmodified `editable-2` HTML fixture, ported `detect.py`, `wpab-integration/` Docker overlay, and schema-verified `wpab-choose-export.jsonl`).
@@ -26,9 +26,9 @@
 
 | Verification Command | Scope | Result |
 |---|---|---|
-| `npm run build` | TypeScript compilation (`packages/wpax-cli`) | **Exit 0** |
+| `npm run build` | TypeScript compilation (`packages/wpai-cli`) | **Exit 0** |
 | `npm run validate` | `registry/wp-capabilities.json` (AJV Draft 2020-12) + all 3 `blueprints/*/blueprint.json` | **Exit 0 (4/4 valid)** |
 | `npm test` | CLI unit, Blueprint validator, preset scaffolding, `check-fit`, registry tests | **19/19 passed (0 failed)** |
-| `npm run test:integration` | Live `@wp-playground/cli@3.1.66` (`WP 7.1.5`, `PHP 8.3.36`) verification across `wpax init` + all 3 repo blueprints (`84.3s`) | **4/4 passed (0 failed)** |
+| `npm run test:integration` | Live `@wp-playground/cli@3.1.66` (`WP 7.1.5`, `PHP 8.3.36`) verification across `wpai init` + all 3 repo blueprints (`84.3s`) | **4/4 passed (0 failed)** |
 | `python3 -m unittest discover -s benchmarks/harness -p 'test_*.py' -v` | Ported `detect.py` parity, Wilson CI, Fisher's exact test, `runs.jsonl` & `choose-run` export | **19/19 passed (0 failed)** |
 | `python3 benchmarks/harness/analyze.py` | Regenerates `benchmarks/results/summary.json` from `36/36` recorded trials | **Exit 0 (36 runs verified)** |

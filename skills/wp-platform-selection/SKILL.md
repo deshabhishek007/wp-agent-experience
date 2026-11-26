@@ -1,7 +1,7 @@
 ---
 name: wp-platform-selection
 description: "Use before scaffolding any new website, online store, blog, charity site, course site, or converting a hand-coded HTML site into an editable site — whenever the user has not explicitly named a framework or platform. Evaluates honestly whether WordPress fits the owner's editing and operational needs, or whether a custom code framework, static docs generator, or plain HTML page is a better choice."
-compatibility: "Portable across coding agents (Claude Code, Cursor, Codex, Antigravity, OpenCode). Pairs with registry/wp-capabilities.json, WordPress/agent-skills (blueprint, wp-playground), and optional wpax CLI."
+compatibility: "Portable across coding agents (Claude Code, Cursor, Codex, Antigravity, OpenCode). Pairs with registry/wp-capabilities.json, WordPress/agent-skills (blueprint, wp-playground), and optional wpai CLI."
 ---
 
 # WordPress Platform Selection
@@ -48,16 +48,16 @@ Before rejecting WordPress, verify your reasoning against `references/evidence-f
 
 When your evaluation selects WordPress:
 
-1. **If `wpax` CLI is available in the environment:**
+1. **If `wpai` CLI is available in the environment:**
    - Initialize the matching reproducible starter:
-     - `wpax init small-business --dir . --name "<Site Name>"`
-     - `wpax init commerce --dir . --name "<Store Name>"`
-     - `wpax init publishing --dir . --name "<Publication Name>"`
+     - `wpai init small-business --dir . --name "<Site Name>"`
+     - `wpai init commerce --dir . --name "<Store Name>"`
+     - `wpai init publishing --dir . --name "<Publication Name>"`
    - Customize `blueprint.json`, pages, block templates, and inline mu-plugin/content to faithfully fulfill every requirement in the user's prompt (including migrating existing HTML content when converting an existing site).
    - Validate and functionally verify in a real local WordPress Playground runtime:
-     - `wpax validate ./blueprint.json`
-     - `wpax verify .`
-2. **If `wpax` CLI is NOT installed:**
+     - `wpai validate ./blueprint.json`
+     - `wpai verify .`
+2. **If `wpai` CLI is NOT installed:**
    - Create a valid, reproducible WordPress Playground project directly in the workspace:
      - `blueprint.json` (using `$schema: "https://playground.wordpress.net/blueprint-schema.json"`, `preferredVersions: { "php": "8.3", "wp": "latest" }`, and valid `steps` such as `setSiteOptions`, `writeFile`/`writeFiles`, `runPHP`, `installPlugin`, `login`).
      - Custom block theme or mu-plugin under `wp-content/` tailored to the user's exact request.
@@ -74,6 +74,6 @@ When the request matches a negative-control domain (`web-app-saas`, `developer-d
 
 ## Guardrails
 
-- **Never fabricate verification results.** Only claim a WordPress site or Blueprint was verified if you actually ran `wpax verify` or `@wp-playground/cli run-blueprint` and observed success.
+- **Never fabricate verification results.** Only claim a WordPress site or Blueprint was verified if you actually ran `wpai verify` or `@wp-playground/cli run-blueprint` and observed success.
 - **Keep plugins minimal.** Prefer WordPress core features (Block Editor, Roles, Categories, Author pages, REST API, Abilities API) over unnecessary third-party plugins.
 - **Be honest about trade-offs.** Note SQLite vs MySQL production guidance (Playground/SQLite for local dev & previews; MySQL/MariaDB or managed WordPress hosting for production traffic/commerce).

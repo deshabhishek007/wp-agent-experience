@@ -340,7 +340,7 @@ def detect(root: Path | str, fixture_dir: Path | str | None = None) -> tuple[str
 
 
 def detect_result(root: Path | str, fixture_dir: Path | str | None = None) -> dict:
-    """Return a structured detection payload compatible with WPAX & wp-agent-benchmark."""
+    """Return a structured detection payload compatible with WPAI & wp-agent-benchmark."""
     root_path = Path(root)
     platform, evidence, changed = detect(root_path, fixture_dir=fixture_dir)
     return {

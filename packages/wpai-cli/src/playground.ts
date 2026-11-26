@@ -82,11 +82,11 @@ function buildVerifyPhpScript(spec: VerifySpec): string {
   const specB64 = Buffer.from(JSON.stringify(spec), 'utf8').toString('base64');
 
   return `<?php
-$wpax_report_path = '/wpax-out/report.json';
-$wpax_written = false;
+$wpai_report_path = '/wpai-out/report.json';
+$wpai_written = false;
 
-register_shutdown_function( function () use ( &$wpax_report_path, &$wpax_written ) {
-    if ( $wpax_written ) {
+register_shutdown_function( function () use ( &$wpai_report_path, &$wpai_written ) {
+    if ( $wpai_written ) {
         return;
     }
     $err = error_get_last();
@@ -121,7 +121,7 @@ register_shutdown_function( function () use ( &$wpax_report_path, &$wpax_written
             ),
         ),
     );
-    @file_put_contents( $wpax_report_path, json_encode( $fallback, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+    @file_put_contents( $wpai_report_path, json_encode( $fallback, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 } );
 
 if ( file_exists( '/wordpress/wp-load.php' ) ) {
@@ -326,12 +326,12 @@ if ( $wp_loaded ) {
     // required_options
     if ( ! empty( $spec['required_options'] ) && is_array( $spec['required_options'] ) ) {
         foreach ( $spec['required_options'] as $opt_key => $opt_expected ) {
-            $actual = get_option( (string) $opt_key, '__WPAX_MISSING__' );
+            $actual = get_option( (string) $opt_key, '__WPAI_MISSING__' );
             if ( $opt_expected === null ) {
-                $ok_opt = ( $actual !== '__WPAX_MISSING__' && $actual !== '' && $actual !== false );
+                $ok_opt = ( $actual !== '__WPAI_MISSING__' && $actual !== '' && $actual !== false );
                 $detail = $ok_opt ? "Option '{$opt_key}' is set" : "Option '{$opt_key}' is missing or empty";
             } else {
-                $ok_opt = ( $actual !== '__WPAX_MISSING__' && (string) $actual === (string) $opt_expected );
+                $ok_opt = ( $actual !== '__WPAI_MISSING__' && (string) $actual === (string) $opt_expected );
                 $detail = $ok_opt
                     ? "Option '{$opt_key}' matches expected value"
                     : "Option '{$opt_key}' expected '" . (string) $opt_expected . "', got '" . ( is_scalar( $actual ) ? (string) $actual : gettype( $actual ) ) . "'";
@@ -403,8 +403,8 @@ $report = array(
     'checks' => $checks,
 );
 
-file_put_contents( $wpax_report_path, json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-$wpax_written = true;
+file_put_contents( $wpai_report_path, json_encode( $report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+$wpai_written = true;
 `;
 }
 
@@ -623,7 +623,7 @@ export async function verifyBlueprint(
   const bundledPaths = new Set<string>();
   collectBundledResourcePaths(originalBlueprint, bundledPaths);
 
-  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-verify-'));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-verify-'));
   const bpDir = path.join(tmpRoot, 'bp');
   const outDir = path.join(tmpRoot, 'out');
   fs.mkdirSync(bpDir, { recursive: true });
@@ -653,7 +653,7 @@ export async function verifyBlueprint(
       ...pg.baseArgs,
       'run-blueprint',
       `--blueprint=${augmentedPath}`,
-      `--mount=${outDir}:/wpax-out`,
+      `--mount=${outDir}:/wpai-out`,
       '--verbosity=quiet',
     ];
     // Auto-mount sibling wp-content/themes/*, wp-content/plugins/*, and wp-content/mu-plugins
@@ -717,7 +717,7 @@ export async function verifyBlueprint(
           {
             name: 'playground_execution',
             passed: false,
-            detail: `Playground exited (${String(res.code)}) without writing /wpax-out/report.json: ${detail.slice(0, 600)}`,
+            detail: `Playground exited (${String(res.code)}) without writing /wpai-out/report.json: ${detail.slice(0, 600)}`,
           },
         ],
         'Verification report was not produced by WordPress Playground.'

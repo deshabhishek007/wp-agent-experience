@@ -1,4 +1,4 @@
-# WPAX Research Report: Can Agent-Facing Discovery and Runtime Tooling Change AI Agents' Platform Choices?
+# WPAI Research Report: Can Agent-Facing Discovery and Runtime Tooling Change AI Agents' Platform Choices?
 
 **Version:** v0.1.0-rc.1 · **Data:** [`benchmarks/results/runs.jsonl`](../benchmarks/results/runs.jsonl) (36 records) · **Statistics:** [`benchmarks/results/summary.json`](../benchmarks/results/summary.json) · **Artifacts:** [`benchmarks/results/artifact-manifest.json`](../benchmarks/results/artifact-manifest.json) · **wpab export:** [`benchmarks/results/wpab-choose-export.jsonl`](../benchmarks/results/wpab-choose-export.jsonl)
 
@@ -10,7 +10,7 @@ In the October 2026 baseline of `apeatling/wp-agent-benchmark` (Suite 0.4.0), AI
 
 - **(A)** an unmodified agent;
 - **(B)** the agent plus a balanced platform-selection skill and a machine-readable WordPress capability registry;
-- **(C)** B plus a minimal CLI (`wpax`) that wraps the official WordPress Playground, three starter blueprints, and live functional verification.
+- **(C)** B plus a minimal CLI (`wpai`) that wraps the official WordPress Playground, three starter blueprints, and live functional verification.
 
 Each arm got the same 12 platform-neutral prompts taken verbatim from the upstream benchmark: 9 WordPress-suitable prompts and 3 negative controls where WordPress is a poor fit.
 
@@ -49,12 +49,12 @@ We used 12 prompts verbatim from upstream Suite 0.4.0 ([`benchmarks/prompts.json
 | Arm | System context | Tools available |
 |---|---|---|
 | A | Generic autonomous coding assistant | Shell and file tools only |
-| B | Must read `skills/wp-platform-selection/SKILL.md` and consult `registry/wp-capabilities.json` before choosing a stack; must choose WordPress only when it fits | + the `evaluate-fit.mjs` helper; no `wpax` |
-| C | Same as B | + `wpax check-fit`, `init`, `validate`, `verify` (wrapping pinned `@wp-playground/cli@3.1.66`) |
+| B | Must read `skills/wp-platform-selection/SKILL.md` and consult `registry/wp-capabilities.json` before choosing a stack; must choose WordPress only when it fits | + the `evaluate-fit.mjs` helper; no `wpai` |
+| C | Same as B | + `wpai check-fit`, `init`, `validate`, `verify` (wrapping pinned `@wp-playground/cli@3.1.66`) |
 
 How the runs were set up:
 
-- **Sandboxes:** each run had its own fresh, empty directory under `/home/antigravity/wpax-eval-sandboxes/run-<cond>-<id>`. They were prepared by `benchmarks/harness/prepare_eval_env.py`.
+- **Sandboxes:** each run had its own fresh, empty directory under `/home/antigravity/wpai-eval-sandboxes/run-<cond>-<id>`. They were prepared by `benchmarks/harness/prepare_eval_env.py`.
 - **Isolation:** agents were told to work only inside their sandbox, plus the read-only skill/registry directory for B and C. No credentials were present in any sandbox.
 - **Questions and download limits:** no clarifying questions were allowed in any arm. A and B were told to keep heavy downloads to a minimum. For the final three C runs, the launcher message asked agents to skip `npm install` unless it was necessary (see §7.4).
 
@@ -64,7 +64,7 @@ Evaluation is in [`benchmarks/harness/evaluate_sandbox.py`](../benchmarks/harnes
 
 1. **Technology selection.** A deterministic file-based detector, ported from upstream wpab `detect()`, reads the sandbox ([`detect.py`](../benchmarks/harness/detect.py)). Agent self-reports are not used.
 2. **Functional completion:**
-   - WordPress outputs: the Blueprint is validated, then executed in live Playground by `wpax verify`. Pass requires the boot to succeed, `php_last_error` to be null, and the declared checks to pass.
+   - WordPress outputs: the Blueprint is validated, then executed in live Playground by `wpai verify`. Pass requires the boot to succeed, `php_last_error` to be null, and the declared checks to pass.
    - Non-WordPress outputs: a static inspection that requires substantive non-empty files and valid JSON. **No build is run** (see §7.3).
 3. **Wall-clock time** from launching the trial to the agent's final report.
 4. **Human interventions.**
@@ -111,11 +111,11 @@ Of the 8 suitable-task runs that used plain HTML or React, 7 were custom zero-de
 | Condition | WordPress outputs | Passed live Playground verification |
 |---|---|---|
 | B (skill + registry, no runtime) | 9 | **8/9 (88.9%)** |
-| C (skill + registry + `wpax`) | 9 | **9/9 (100.0%)** |
+| C (skill + registry + `wpai`) | 9 | **9/9 (100.0%)** |
 
 The B failure was **`B-business-3`** (yoga studio). The agent wrote a 16-step Blueprint for a custom FSE theme (`stillwater-yoga`) plus a contact/inquiries mu-plugin. When booted in live WordPress Playground (`WP 7.1.5`, `PHP 8.3.36`), `playground_execution` failed at Blueprint step #16 (`PHP.run() failed with exit code 255` returning a fatal `WordPress › Error` HTML page). Because Condition B agents had no runtime tool to boot their Blueprints, the agent shipped an unverified PHP step error without ever executing it.
 
-Every C agent ran `wpax verify` and fixed problems before reporting. They also reported their check counts, for example "wpax verify 18/18 passed". The independent harness re-verification then passed for all 9 C outputs.
+Every C agent ran `wpai verify` and fixed problems before reporting. They also reported their check counts, for example "wpai verify 18/18 passed". The independent harness re-verification then passed for all 9 C outputs.
 
 Fisher's test on 8/9 vs 9/9 is not significant (p = 1.0). This is one observed failure, not a measured effect size. It is still qualitative evidence that adding a runtime turns "chose WordPress" into "delivered a WordPress site that works".
 
@@ -128,7 +128,7 @@ Fisher's test on 8/9 vs 9/9 is not significant (p = 1.0). This is one observed f
 | C | 267.0 / 274.0 (200–312) | 107.3 |
 
 - **A was slowest on suitable tasks** because its agents hand-built CMS-like admin panels, persistence layers and order handling.
-- **C took about 43 s longer than B** on suitable tasks. That gap is consistent with running `wpax verify`, which includes a Playground boot of about 20–25 s, plus fix-up passes.
+- **C took about 43 s longer than B** on suitable tasks. That gap is consistent with running `wpai verify`, which includes a Playground boot of about 20–25 s, plus fix-up passes.
 - **C's controls were very fast (about 107 s).** These runs came after a quota pause and ran with a launcher message telling agents to skip `npm install` (§7.4), so do not compare them directly with the control times in A and B.
 
 ### 4.4 Artifact inspection (qualitative)
@@ -145,14 +145,14 @@ What the agents built in each condition:
 
 - **A: rebuilding a CMS.** In `business-3`, `store-1`, `blog-3`, `org-2`, `editable-2` and `course-1`, the agent built a bespoke Node.js server with JSON-file or `node:sqlite` persistence and its own admin interface. These are exactly the editorial, commerce and multi-author capabilities WordPress provides out of the box. The resulting code has no ecosystem behind it for updates, security patches or other people maintaining it. `editable-2` kept the nephew's static HTML and added a custom JSON menu editor.
 - **B: authoring WordPress by hand.** Agents wrote complete FSE block themes plus `blueprint.json` and mu-plugins, without starter templates. Output was sizeable, and 1 of 9 Blueprints was broken.
-- **C: customizing a starter.** Agents ran `wpax init <small-business|commerce|publishing>`, then customized pages, custom post types, taxonomies and Abilities API registrations. That is fewer files at a similar size, and every output was verified. `editable-2` migrated the upstream cafe HTML into a custom FSE theme. `course-1` used custom post types plus a LifterLMS Blueprint variant.
-- **Controls in B and C:** agents explicitly cited the skill's negative domains (`web-app-saas`, `developer-docs`, `single-static-page`) and did not run `wpax init`.
+- **C: customizing a starter.** Agents ran `wpai init <small-business|commerce|publishing>`, then customized pages, custom post types, taxonomies and Abilities API registrations. That is fewer files at a similar size, and every output was verified. `editable-2` migrated the upstream cafe HTML into a custom FSE theme. `course-1` used custom post types plus a LifterLMS Blueprint variant.
+- **Controls in B and C:** agents explicitly cited the skill's negative domains (`web-app-saas`, `developer-docs`, `single-static-page`) and did not run `wpai init`.
 
 ## 5. Interpretation
 
 1. **The baseline replicated.** Condition A's 0/9 matches the upstream 0/197. The 0% figure therefore holds for the model behind these trials as well as for the upstream agents.
 2. **Discovery content was the lever for *selection*.** Once agents were told to consult a balanced skill and registry, they chose WordPress for every suitable task and still avoided it for every control. We tested the skill and registry only together, so we cannot say how much each one contributed.
-3. **The runtime was the lever for *working output*.** Without a way to execute WordPress locally, about 1 in 9 sites the agents produced was broken. With `wpax verify`, none was. This supports pairing any selection intervention with Playground-based verification.
+3. **The runtime was the lever for *working output*.** Without a way to execute WordPress locally, about 1 in 9 sites the agents produced was broken. With `wpai verify`, none was. This supports pairing any selection intervention with Playground-based verification.
 
 ## 6. Reproducibility
 
@@ -177,19 +177,19 @@ Across all **16 unseen Suite 0.4.0 prompts**, the unmodified deterministic helpe
 ### 7.2 Held-Out Controlled Results (27 Runs: Conditions A, C, and D)
 
 - **Condition A (Baseline):** Neutral coding-assistant system prompt, verbatim user prompt, fresh sandbox.
-- **Condition C (Prompted Skill + Registry + `wpax`):** Identical to main study Condition C, on unseen prompts.
-- **Condition D (Unprompted / Organic Discovery):** **100% identical system prompt to Condition A** (zero mention of WordPress, skills, `.agents`, registry, or `wpax`). The only difference from Condition A is that `skills/wp-platform-selection/` (plus `wp-capabilities.json`) is pre-installed in the standard `.agents/skills/wp-platform-selection/` workspace directory.
-- **Symmetric Verification:** Every non-WordPress output was verified via `node --check` / `py_compile` / HTML asset checks plus real `npm install && npm run build` or `npm test` execution; every WordPress output was verified live in WordPress Playground (`wpax verify`, enhanced to auto-mount sibling `wp-content/themes/*`, `wp-content/plugins/*`, and `wp-content/mu-plugins/`).
+- **Condition C (Prompted Skill + Registry + `wpai`):** Identical to main study Condition C, on unseen prompts.
+- **Condition D (Unprompted / Organic Discovery):** **100% identical system prompt to Condition A** (zero mention of WordPress, skills, `.agents`, registry, or `wpai`). The only difference from Condition A is that `skills/wp-platform-selection/` (plus `wp-capabilities.json`) is pre-installed in the standard `.agents/skills/wp-platform-selection/` workspace directory.
+- **Symmetric Verification:** Every non-WordPress output was verified via `node --check` / `py_compile` / HTML asset checks plus real `npm install && npm run build` or `npm test` execution; every WordPress output was verified live in WordPress Playground (`wpai verify`, enhanced to auto-mount sibling `wp-content/themes/*`, `wp-content/plugins/*`, and `wp-content/mu-plugins/`).
 
 | Condition | Suitable WP Rate (95% Wilson CI) | Control Specificity (95% CI) | Symmetric Verified | Mean / Median Time (s) |
 |---|---|---|---|---|
 | **A (Held-Out Baseline)** | **0/6 (0.0%)** [0.0%, 39.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 314.6 / 294.0 |
-| **C (Held-Out Skill + `wpax`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** |
+| **C (Held-Out Skill + `wpai`)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | **225.7 / 250.0** |
 | **D (Held-Out Unprompted Discovery)** | **6/6 (100.0%)** [61.0%, 100.0%] | **3/3 (100.0%)** [43.9%, 100.0%] | 9/9 (100.0%) | 366.3 / 347.0 |
 
 - **Fisher's exact test (`C_vs_A` and `D_vs_A`):** `+100.0 pp`, one-sided `p = 0.00108`, two-sided `p = 0.00216` (`[[6, 0], [0, 6]]`).
 - **Generalization beyond keyword matching:** On both `course-2` and `page-1` (where `evaluate-fit.mjs` returned `needs_clarification`), agents in both Condition C and Condition D reasoned from `SKILL.md` to choose WordPress for `course-2` and static HTML for `page-1`.
-- **Runtime efficiency (`C` vs `D`):** Condition D proved that installing a neutral skill in `.agents/skills/` is sufficient for **organic, unprompted discovery (6/6 suitable, 3/3 controls)**, while Condition C (`wpax` starters + `wpax verify`) cut mean wall-clock delivery time by **38.4%** relative to Condition D (`225.7s` vs `366.3s`) and **28.3%** relative to Condition A (`314.6s`).
+- **Runtime efficiency (`C` vs `D`):** Condition D proved that installing a neutral skill in `.agents/skills/` is sufficient for **organic, unprompted discovery (6/6 suitable, 3/3 controls)**, while Condition C (`wpai` starters + `wpai verify`) cut mean wall-clock delivery time by **38.4%** relative to Condition D (`225.7s` vs `366.3s`) and **28.3%** relative to Condition A (`314.6s`).
 - **Combined 63-run totals (36 main + 27 held-out):** Baseline A = **0/15 (0.0%)** suitable WP, **6/6 (100.0%)** controls; Condition C = **15/15 (100.0%)** suitable WP, **6/6 (100.0%)** controls, **15/15** live Playground verified; Condition D = **6/6 (100.0%)** suitable WP, **3/3 (100.0%)** controls, **6/6** live Playground verified. Raw data: [`benchmarks/results/runs-heldout.jsonl`](../benchmarks/results/runs-heldout.jsonl) and [`benchmarks/results/summary-heldout.json`](../benchmarks/results/summary-heldout.json).
 
 ## 8. Remaining Threats to Validity and Limitations
@@ -206,5 +206,5 @@ Across all **16 unseen Suite 0.4.0 prompts**, the unmodified deterministic helpe
 
 1. Run the Docker overlay in `benchmarks/wpab-integration/` on at least two other agent/model families (Claude Code, Codex/GPT) via upstream `wpab`.
 2. Run multi-repeat trials (3–5 seeds per prompt) to estimate per-prompt variance.
-3. Expose `wpax` as an MCP server (`wpax mcp`) and expand starter blueprints (`nonprofit-org`, `course-membership`, `make-editable`) plus production export (`wpax export`).
+3. Expose `wpai` as an MCP server (`wpai mcp`) and expand starter blueprints (`nonprofit-org`, `course-membership`, `make-editable`) plus production export (`wpai export`).
 

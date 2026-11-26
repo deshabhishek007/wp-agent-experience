@@ -1,6 +1,6 @@
 # AGENTS.md — Autonomous Agent Operating Manual & Resume Protocol
 
-This file enables any AI coding agent (Antigravity, Claude Code, Cursor, Codex, OpenCode) to resume WPAX work cleanly from repository state alone.
+This file enables any AI coding agent (Antigravity, Claude Code, Cursor, Codex, OpenCode) to resume WPAI work cleanly from repository state alone.
 
 ## 1. Quick Orientation
 
@@ -36,7 +36,7 @@ wp-agent-experience/
 │   ├── schema/wp-capabilities.schema.json  # D3: JSON Schema
 │   └── wp-capabilities.json         # D3: Machine-readable capability registry
 ├── packages/
-│   └── wpax-cli/                    # D4: TypeScript CLI wrapping @wp-playground/cli
+│   └── wpai-cli/                    # D4: TypeScript CLI wrapping @wp-playground/cli
 ├── blueprints/
 │   ├── small-business/              # D5: Small business blueprint + verify spec
 │   ├── commerce/                    # D5: Online store blueprint + verify spec

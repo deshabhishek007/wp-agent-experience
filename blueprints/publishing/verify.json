@@ -18,13 +18,13 @@
   "required_rest_routes": [
     "/wp/v2/posts",
     "/wp/v2/categories",
-    "/wpax/v1/editorial-summary"
+    "/wpai/v1/editorial-summary"
   ],
   "require_abilities_api": true,
   "required_abilities": [
-    "wpax/editorial-summary"
+    "wpai/editorial-summary"
   ],
   "required_mu_plugins": [
-    "wpax-publishing.php"
+    "wpai-publishing.php"
   ]
 }

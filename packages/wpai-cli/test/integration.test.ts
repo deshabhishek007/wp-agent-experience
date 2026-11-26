@@ -11,9 +11,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const cliEntry = path.resolve(__dirname, '../../dist/cli.js');
 
-describe('wpax live WordPress Playground integration smoke test', () => {
-  it('runs wpax init small-business -> wpax validate -> wpax verify against real WordPress Playground', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-smoke-'));
+describe('wpai live WordPress Playground integration smoke test', () => {
+  it('runs wpai init small-business -> wpai validate -> wpai verify against real WordPress Playground', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpai-smoke-'));
     try {
       // 1. Init small-business preset
       const initOut = execFileSync(
@@ -51,9 +51,9 @@ describe('wpax live WordPress Playground integration smoke test', () => {
       assert.equal(report.rest_api.types_status, 200);
       assert.ok(report.counts.pages >= 4, `Expected >=4 published pages, got ${report.counts.pages}`);
       assert.ok(
-        report.mu_plugins.includes('wpax-business.php') ||
-          report.mu_plugins.includes('wpax-business-essentials.php'),
-        `Expected wpax business mu-plugin in mu_plugins: ${JSON.stringify(report.mu_plugins)}`
+        report.mu_plugins.includes('wpai-business.php') ||
+          report.mu_plugins.includes('wpai-business-essentials.php'),
+        `Expected wpai business mu-plugin in mu_plugins: ${JSON.stringify(report.mu_plugins)}`
       );
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });

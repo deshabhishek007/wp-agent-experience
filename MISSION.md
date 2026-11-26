@@ -1,4 +1,4 @@
-# WPAX — WordPress Agent Experience Mission Charter
+# WPAI — WordPress Agent Experience Mission Charter
 
 - **Mission Start (UTC):** 2026-11-26T07:42:25Z
 - **Mission Deadline (UTC, +72h):** 2026-11-29T07:42:25Z
@@ -15,7 +15,7 @@ Make WordPress easier for AI agents to independently discover, evaluate, select,
 Providing AI coding agents with:
 1. A neutral, evidence-backed **platform-selection agent skill** (`skills/wp-platform-selection/`),
 2. A **machine-readable WordPress capability registry** (`registry/wp-capabilities.json`), and
-3. A **minimal TypeScript CLI wrapping official WordPress Playground** (`packages/wpax-cli/`) with reproducible blueprints and functional verification
+3. A **minimal TypeScript CLI wrapping official WordPress Playground** (`packages/wpai-cli/`) with reproducible blueprints and functional verification
 
 will produce a measurable improvement (target hypothesis: **+25 percentage points**) in appropriate WordPress selection on WordPress-suitable tasks while maintaining low/zero false-positive WordPress selection on negative controls (web apps/SaaS, developer docs, single static link pages).
 
@@ -28,7 +28,7 @@ This is an empirical hypothesis to be tested honestly — never fabricated or ga
 1. **D1:** Upstream technical gap analysis (`docs/upstream-gap-analysis.md`)
 2. **D2:** Portable platform-selection agent skill (`skills/wp-platform-selection/`)
 3. **D3:** Machine-readable WordPress capability registry + JSON Schema (`registry/`)
-4. **D4:** Minimal TypeScript CLI wrapping official `@wp-playground/cli` (`packages/wpax-cli/`)
+4. **D4:** Minimal TypeScript CLI wrapping official `@wp-playground/cli` (`packages/wpai-cli/`)
 5. **D5 (core):** First verified blueprint (`blueprints/small-business/`)
 6. **D6 (core):** Automated functional verification tests
 7. **D7/D8 (core):** Integration with `apeatling/wp-agent-benchmark` and controlled A/B/C experiment harness with real evidence

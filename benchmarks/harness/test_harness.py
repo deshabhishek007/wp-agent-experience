@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for WPAX benchmark harness (`detect.py` and `analyze.py`).
+"""Unit tests for WPAI benchmark harness (`detect.py` and `analyze.py`).
 
 Run with:
     python3 -m unittest benchmarks/harness/test_harness.py
@@ -26,7 +26,7 @@ import detect  # noqa: E402
 
 
 def _make_sandbox(files: dict[str, str]) -> tempfile.TemporaryDirectory:
-    tmp = tempfile.TemporaryDirectory(prefix="wpax-test-")
+    tmp = tempfile.TemporaryDirectory(prefix="wpai-test-")
     root = Path(tmp.name)
     for rel_path, content in files.items():
         target = root / rel_path
@@ -143,7 +143,7 @@ class TestDetect(unittest.TestCase):
     def test_unchanged_fixture_is_nothing_built(self) -> None:
         fixture = REPO_ROOT / "benchmarks" / "fixtures" / "editable-2"
         self.assertTrue(fixture.is_dir(), f"Expected fixture dir at {fixture}")
-        with tempfile.TemporaryDirectory(prefix="wpax-fix-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="wpai-fix-") as tmp:
             sandbox = Path(tmp) / "sandbox"
             shutil.copytree(fixture, sandbox)
             platform, evidence, changed = detect.detect(sandbox, fixture_dir=fixture)
@@ -344,12 +344,12 @@ class TestAnalyze(unittest.TestCase):
         self.assertLess(b_vs_a["fisher_exact"]["p_one_sided_greater"], 0.005)
 
         md = analyze.format_markdown(summary)
-        self.assertIn("WPAX Controlled Experiment Summary", md)
+        self.assertIn("WPAI Controlled Experiment Summary", md)
         self.assertIn("B_vs_A", md)
         self.assertIn("C_vs_A", md)
 
         # Also test CLI execution writing summary.json
-        with tempfile.TemporaryDirectory(prefix="wpax-analyze-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="wpai-analyze-") as tmp:
             inp = Path(tmp) / "runs.jsonl"
             out = Path(tmp) / "summary.json"
             inp.write_text("\n".join(json.dumps(r) for r in runs) + "\n", encoding="utf-8")

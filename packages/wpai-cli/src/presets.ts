@@ -36,7 +36,7 @@ function buildSmallBusinessTemplate(): PresetTemplate {
   const defaultName = 'Local Business Starter';
   const muPluginCode = `<?php
 /**
- * Plugin Name: WPAX Business Essentials
+ * Plugin Name: WPAI Business Essentials
  * Description: Lightweight business hours, inquiry REST endpoint, and WordPress 6.9+ Abilities API site-info registration.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -44,15 +44,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'wpax/v1', '/site-info', array(
+    register_rest_route( 'wpai/v1', '/site-info', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
         'callback'            => function () {
             return rest_ensure_response( array(
                 'site_name' => get_bloginfo( 'name' ),
                 'tagline'   => get_bloginfo( 'description' ),
-                'hours'     => get_option( 'wpax_business_hours', 'Mon-Fri 08:00-18:00, Sat 09:00-15:00' ),
-                'phone'     => get_option( 'wpax_business_phone', '(555) 010-2026' ),
+                'hours'     => get_option( 'wpai_business_hours', 'Mon-Fri 08:00-18:00, Sat 09:00-15:00' ),
+                'phone'     => get_option( 'wpai_business_phone', '(555) 010-2026' ),
             ) );
         },
     ) );
@@ -60,8 +60,8 @@ add_action( 'rest_api_init', function () {
 
 add_action( 'wp_abilities_api_categories_init', function () {
     if ( function_exists( 'wp_register_ability_category' ) ) {
-        wp_register_ability_category( 'wpax', array(
-            'label'       => 'WPAX Site',
+        wp_register_ability_category( 'wpai', array(
+            'label'       => 'WPAI Site',
             'description' => 'WordPress Agent Experience site metadata abilities.',
         ) );
     }
@@ -69,15 +69,15 @@ add_action( 'wp_abilities_api_categories_init', function () {
 
 add_action( 'wp_abilities_api_init', function () {
     if ( function_exists( 'wp_register_ability' ) ) {
-        wp_register_ability( 'wpax/get-business-info', array(
+        wp_register_ability( 'wpai/get-business-info', array(
             'label'               => 'Get Business Info',
             'description'         => 'Returns business name, hours, and contact phone number.',
-            'category'            => 'wpax',
+            'category'            => 'wpai',
             'execute_callback'    => function () {
                 return array(
                     'site_name' => get_bloginfo( 'name' ),
-                    'hours'     => get_option( 'wpax_business_hours', 'Mon-Fri 08:00-18:00, Sat 09:00-15:00' ),
-                    'phone'     => get_option( 'wpax_business_phone', '(555) 010-2026' ),
+                    'hours'     => get_option( 'wpai_business_hours', 'Mon-Fri 08:00-18:00, Sat 09:00-15:00' ),
+                    'phone'     => get_option( 'wpai_business_phone', '(555) 010-2026' ),
                 );
             },
             'permission_callback' => '__return_true',
@@ -143,9 +143,9 @@ flush_rewrite_rules();
     landingPage: '/',
     meta: {
       title: defaultName,
-      author: 'wpax',
+      author: 'wpai',
       description: 'Owner-editable small business WordPress starter with Block Editor pages, REST endpoint, and Abilities API.',
-      categories: ['small-business', 'wpax'],
+      categories: ['small-business', 'wpai'],
     },
     preferredVersions: {
       php: '8.3',
@@ -158,8 +158,8 @@ flush_rewrite_rules();
         options: {
           blogname: defaultName,
           blogdescription: 'Owner-editable local business site powered by WordPress',
-          wpax_business_hours: 'Mon-Fri 08:00-18:00, Sat 09:00-15:00',
-          wpax_business_phone: '(555) 010-2026',
+          wpai_business_hours: 'Mon-Fri 08:00-18:00, Sat 09:00-15:00',
+          wpai_business_phone: '(555) 010-2026',
         },
       },
       {
@@ -168,7 +168,7 @@ flush_rewrite_rules();
       },
       {
         step: 'writeFile',
-        path: '/wordpress/wp-content/mu-plugins/wpax-business-essentials.php',
+        path: '/wordpress/wp-content/mu-plugins/wpai-business-essentials.php',
         data: muPluginCode,
       },
       {
@@ -184,13 +184,13 @@ flush_rewrite_rules();
     required_options: {
       show_on_front: 'page',
     },
-    required_rest_routes: ['/wp/v2/pages', '/wpax/v1/site-info'],
+    required_rest_routes: ['/wp/v2/pages', '/wpai/v1/site-info'],
     require_abilities_api: true,
   };
 
   const readme = `# ${defaultName}
 
-WordPress starter scaffolded by \`wpax init small-business\`.
+WordPress starter scaffolded by \`wpai init small-business\`.
 
 ## Local Preview (Zero MySQL / Zero Docker)
 
@@ -201,7 +201,7 @@ npm run start
 ## Automated Functional Verification
 
 \`\`\`bash
-wpax verify .
+wpai verify .
 \`\`\`
 
 ## Owner Editing
@@ -213,10 +213,10 @@ Log in to \`/wp-admin/\` to edit Home, Services, About, and Contact pages visual
 }
 
 function buildCommerceTemplate(): PresetTemplate {
-  const defaultName = 'WPAX Online Store';
+  const defaultName = 'WPAI Online Store';
   const muPluginCode = `<?php
 /**
- * Plugin Name: WPAX Commerce Starter
+ * Plugin Name: WPAI Commerce Starter
  * Description: Lightweight product catalog CPT with SKU, price, stock quantity, weight-based shipping rules, and REST/Abilities integration.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -224,7 +224,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_action( 'init', function () {
-    register_post_type( 'wpax_product', array(
+    register_post_type( 'wpai_product', array(
         'labels' => array(
             'name'          => 'Products',
             'singular_name' => 'Product',
@@ -237,7 +237,7 @@ add_action( 'init', function () {
     ) );
 
     foreach ( array( 'sku', 'price_usd', 'stock_qty', 'weight_kg' ) as $meta_key ) {
-        register_post_meta( 'wpax_product', $meta_key, array(
+        register_post_meta( 'wpai_product', $meta_key, array(
             'show_in_rest' => true,
             'single'       => true,
             'type'         => 'string',
@@ -246,7 +246,7 @@ add_action( 'init', function () {
 } );
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'wpax/v1', '/shipping-rates', array(
+    register_rest_route( 'wpai/v1', '/shipping-rates', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
         'callback'            => function () {
@@ -264,8 +264,8 @@ add_action( 'rest_api_init', function () {
 
 add_action( 'wp_abilities_api_categories_init', function () {
     if ( function_exists( 'wp_register_ability_category' ) ) {
-        wp_register_ability_category( 'wpax', array(
-            'label'       => 'WPAX Store',
+        wp_register_ability_category( 'wpai', array(
+            'label'       => 'WPAI Store',
             'description' => 'Store catalog and shipping abilities.',
         ) );
     }
@@ -273,13 +273,13 @@ add_action( 'wp_abilities_api_categories_init', function () {
 
 add_action( 'wp_abilities_api_init', function () {
     if ( function_exists( 'wp_register_ability' ) ) {
-        wp_register_ability( 'wpax/list-products', array(
+        wp_register_ability( 'wpai/list-products', array(
             'label'               => 'List Catalog Products',
             'description'         => 'Lists published products with SKU, price, stock quantity, and weight.',
-            'category'            => 'wpax',
+            'category'            => 'wpai',
             'execute_callback'    => function () {
                 $items = get_posts( array(
-                    'post_type'      => 'wpax_product',
+                    'post_type'      => 'wpai_product',
                     'post_status'    => 'publish',
                     'posts_per_page' => 50,
                 ) );
@@ -348,7 +348,7 @@ $products = array(
 
 foreach ( $products as $item ) {
     $pid = wp_insert_post( array(
-        'post_type'    => 'wpax_product',
+        'post_type'    => 'wpai_product',
         'post_status'  => 'publish',
         'post_title'   => $item['title'],
         'post_content' => '<!-- wp:paragraph --><p>Editable product description with SKU, stock tracking, and shipping weight.</p><!-- /wp:paragraph -->',
@@ -374,9 +374,9 @@ flush_rewrite_rules();
     landingPage: '/',
     meta: {
       title: defaultName,
-      author: 'wpax',
+      author: 'wpai',
       description: 'Online store WordPress starter with catalog CPT, stock & weight metadata, shipping rules, and WooCommerce upgrade path.',
-      categories: ['commerce', 'wpax'],
+      categories: ['commerce', 'wpai'],
     },
     preferredVersions: {
       php: '8.3',
@@ -397,7 +397,7 @@ flush_rewrite_rules();
       },
       {
         step: 'writeFile',
-        path: '/wordpress/wp-content/mu-plugins/wpax-commerce-starter.php',
+        path: '/wordpress/wp-content/mu-plugins/wpai-commerce-starter.php',
         data: muPluginCode,
       },
       {
@@ -410,14 +410,14 @@ flush_rewrite_rules();
   const verify: VerifySpec = {
     expected_blogname: defaultName,
     required_pages: ['shop', 'cart', 'shipping-and-returns', 'contact'],
-    required_post_types: ['wpax_product'],
-    required_rest_routes: ['/wp/v2/wpax_product', '/wpax/v1/shipping-rates'],
+    required_post_types: ['wpai_product'],
+    required_rest_routes: ['/wp/v2/wpai_product', '/wpai/v1/shipping-rates'],
     require_abilities_api: true,
   };
 
   const readme = `# ${defaultName}
 
-WordPress commerce starter scaffolded by \`wpax init commerce\`.
+WordPress commerce starter scaffolded by \`wpai init commerce\`.
 
 ## Local Preview (Zero MySQL / Zero Docker)
 
@@ -428,7 +428,7 @@ npm run start
 ## Automated Functional Verification
 
 \`\`\`bash
-wpax verify .
+wpai verify .
 \`\`\`
 
 ## WooCommerce Upgrade Path
@@ -440,7 +440,7 @@ Add \`woocommerce\` and \`weight-based-shipping-for-woocommerce\` to \`blueprint
 }
 
 function buildPublishingTemplate(): PresetTemplate {
-  const defaultName = 'WPAX Community News';
+  const defaultName = 'WPAI Community News';
   const seedPhp = `<?php
 require_once '/wordpress/wp-load.php';
 
@@ -550,9 +550,9 @@ flush_rewrite_rules();
     landingPage: '/',
     meta: {
       title: defaultName,
-      author: 'wpax',
+      author: 'wpai',
       description: 'Multi-author blog and local news publication starter using WordPress core Posts, Categories, and Editorial Roles.',
-      categories: ['publishing', 'wpax'],
+      categories: ['publishing', 'wpai'],
     },
     preferredVersions: {
       php: '8.3',
@@ -586,7 +586,7 @@ flush_rewrite_rules();
 
   const readme = `# ${defaultName}
 
-Multi-author WordPress publishing starter scaffolded by \`wpax init publishing\`.
+Multi-author WordPress publishing starter scaffolded by \`wpai init publishing\`.
 
 ## Local Preview (Zero MySQL / Zero Docker)
 
@@ -597,7 +597,7 @@ npm run start
 ## Automated Functional Verification
 
 \`\`\`bash
-wpax verify .
+wpai verify .
 \`\`\`
 
 ## Editorial Roles Included
@@ -632,7 +632,7 @@ function buildNonprofitTemplate(): PresetTemplate {
   const defaultName = 'Community Nonprofit Starter';
   const muPluginCode = `<?php
 /**
- * Plugin Name: WPAX Nonprofit Essentials
+ * Plugin Name: WPAI Nonprofit Essentials
  * Description: Events, donation pledges, volunteer signups, REST API endpoints, and WP 6.9+ Abilities API registration.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -640,7 +640,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_action( 'init', function () {
-    register_post_type( 'wpax_event', array(
+    register_post_type( 'wpai_event', array(
         'labels'       => array( 'name' => 'Events', 'singular_name' => 'Event' ),
         'public'       => true,
         'show_in_rest' => true,
@@ -648,14 +648,14 @@ add_action( 'init', function () {
         'has_archive'  => true,
         'rewrite'      => array( 'slug' => 'events' ),
     ) );
-    register_post_type( 'wpax_donation', array(
+    register_post_type( 'wpai_donation', array(
         'labels'       => array( 'name' => 'Donations', 'singular_name' => 'Donation' ),
         'public'       => false,
         'show_ui'      => true,
         'show_in_rest' => false,
         'supports'     => array( 'title', 'custom-fields' ),
     ) );
-    register_post_type( 'wpax_volunteer', array(
+    register_post_type( 'wpai_volunteer', array(
         'labels'       => array( 'name' => 'Volunteers', 'singular_name' => 'Volunteer' ),
         'public'       => false,
         'show_ui'      => true,
@@ -665,11 +665,11 @@ add_action( 'init', function () {
 } );
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'wpax/v1', '/nonprofit-summary', array(
+    register_rest_route( 'wpai/v1', '/nonprofit-summary', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
         'callback'            => function () {
-            $events = wp_count_posts( 'wpax_event' );
+            $events = wp_count_posts( 'wpai_event' );
             return rest_ensure_response( array(
                 'organization'    => get_bloginfo( 'name' ),
                 'upcoming_events' => isset( $events->publish ) ? (int) $events->publish : 0,
@@ -680,8 +680,8 @@ add_action( 'rest_api_init', function () {
 
 add_action( 'wp_abilities_api_categories_init', function () {
     if ( function_exists( 'wp_register_ability_category' ) ) {
-        wp_register_ability_category( 'wpax', array(
-            'label'       => 'WPAX Nonprofit',
+        wp_register_ability_category( 'wpai', array(
+            'label'       => 'WPAI Nonprofit',
             'description' => 'Nonprofit events, donations, and volunteer abilities.',
         ) );
     }
@@ -689,12 +689,12 @@ add_action( 'wp_abilities_api_categories_init', function () {
 
 add_action( 'wp_abilities_api_init', function () {
     if ( function_exists( 'wp_register_ability' ) ) {
-        wp_register_ability( 'wpax/get-nonprofit-summary', array(
+        wp_register_ability( 'wpai/get-nonprofit-summary', array(
             'label'               => 'Get Nonprofit Summary',
             'description'         => 'Returns organization name and published event count.',
-            'category'            => 'wpax',
+            'category'            => 'wpai',
             'execute_callback'    => function () {
-                $events = wp_count_posts( 'wpax_event' );
+                $events = wp_count_posts( 'wpai_event' );
                 return array(
                     'organization'    => get_bloginfo( 'name' ),
                     'upcoming_events' => isset( $events->publish ) ? (int) $events->publish : 0,
@@ -747,13 +747,13 @@ $events = array(
 );
 foreach ( $events as $ev ) {
     $id = wp_insert_post( array(
-        'post_type'    => 'wpax_event',
+        'post_type'    => 'wpai_event',
         'post_status'  => 'publish',
         'post_title'   => $ev['title'],
         'post_content' => '<!-- wp:paragraph --><p>Join our volunteers for ' . esc_html( $ev['title'] ) . '.</p><!-- /wp:paragraph -->',
     ) );
     if ( $id && ! is_wp_error( $id ) ) {
-        update_post_meta( $id, '_wpax_event_date', $ev['date'] );
+        update_post_meta( $id, '_wpai_event_date', $ev['date'] );
     }
 }
 flush_rewrite_rules();
@@ -767,7 +767,7 @@ flush_rewrite_rules();
       landingPage: '/',
       meta: {
         title: defaultName,
-        author: 'WPAX',
+        author: 'WPAI',
         description: 'Reproducible WordPress nonprofit starter with Events, Donations, Volunteers, REST API, and Abilities API.',
       },
       preferredVersions: { php: '8.3', wp: 'latest' },
@@ -782,18 +782,18 @@ flush_rewrite_rules();
           },
         },
         { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
-        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-nonprofit.php', data: muPluginCode },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpai-nonprofit.php', data: muPluginCode },
         { step: 'runPHP', code: seedPhp },
       ],
     },
     verify: {
       expected_blogname: defaultName,
       required_pages: ['home', 'events', 'donate', 'volunteer'],
-      required_post_types: ['wpax_event'],
-      required_rest_routes: ['/wp/v2/types', '/wpax/v1/nonprofit-summary'],
+      required_post_types: ['wpai_event'],
+      required_rest_routes: ['/wp/v2/types', '/wpai/v1/nonprofit-summary'],
       require_abilities_api: true,
     },
-    readme: `# ${defaultName}\n\nScaffolded by \`wpax init nonprofit\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+    readme: `# ${defaultName}\n\nScaffolded by \`wpai init nonprofit\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpai verify .\nwpai export . --out ./dist-wp\n\`\`\`\n`,
   };
 }
 
@@ -801,7 +801,7 @@ function buildCourseTemplate(): PresetTemplate {
   const defaultName = 'Online Course Studio';
   const muPluginCode = `<?php
 /**
- * Plugin Name: WPAX Course Essentials
+ * Plugin Name: WPAI Course Essentials
  * Description: Courses & video lessons CPTs, enrollment REST endpoint, and WP 6.9+ Abilities API registration.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -809,7 +809,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_action( 'init', function () {
-    register_post_type( 'wpax_course', array(
+    register_post_type( 'wpai_course', array(
         'labels'       => array( 'name' => 'Courses', 'singular_name' => 'Course' ),
         'public'       => true,
         'show_in_rest' => true,
@@ -817,7 +817,7 @@ add_action( 'init', function () {
         'has_archive'  => true,
         'rewrite'      => array( 'slug' => 'courses' ),
     ) );
-    register_post_type( 'wpax_lesson', array(
+    register_post_type( 'wpai_lesson', array(
         'labels'       => array( 'name' => 'Lessons', 'singular_name' => 'Lesson' ),
         'public'       => true,
         'show_in_rest' => true,
@@ -827,17 +827,17 @@ add_action( 'init', function () {
 } );
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'wpax/v1', '/courses', array(
+    register_rest_route( 'wpai/v1', '/courses', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
         'callback'            => function () {
-            $courses = get_posts( array( 'post_type' => 'wpax_course', 'post_status' => 'publish', 'numberposts' => 20 ) );
+            $courses = get_posts( array( 'post_type' => 'wpai_course', 'post_status' => 'publish', 'numberposts' => 20 ) );
             $items = array();
             foreach ( $courses as $c ) {
                 $items[] = array(
                     'id'    => $c->ID,
                     'title' => $c->post_title,
-                    'price' => (float) get_post_meta( $c->ID, '_wpax_course_price', true ),
+                    'price' => (float) get_post_meta( $c->ID, '_wpai_course_price', true ),
                 );
             }
             return rest_ensure_response( array( 'courses' => $items, 'count' => count( $items ) ) );
@@ -847,8 +847,8 @@ add_action( 'rest_api_init', function () {
 
 add_action( 'wp_abilities_api_categories_init', function () {
     if ( function_exists( 'wp_register_ability_category' ) ) {
-        wp_register_ability_category( 'wpax', array(
-            'label'       => 'WPAX Courses',
+        wp_register_ability_category( 'wpai', array(
+            'label'       => 'WPAI Courses',
             'description' => 'Course catalog and lesson abilities.',
         ) );
     }
@@ -856,12 +856,12 @@ add_action( 'wp_abilities_api_categories_init', function () {
 
 add_action( 'wp_abilities_api_init', function () {
     if ( function_exists( 'wp_register_ability' ) ) {
-        wp_register_ability( 'wpax/list-courses', array(
+        wp_register_ability( 'wpai/list-courses', array(
             'label'               => 'List Courses',
             'description'         => 'Returns published courses and prices.',
-            'category'            => 'wpax',
+            'category'            => 'wpai',
             'execute_callback'    => function () {
-                $counts = wp_count_posts( 'wpax_course' );
+                $counts = wp_count_posts( 'wpai_course' );
                 return array( 'courses_published' => isset( $counts->publish ) ? (int) $counts->publish : 0 );
             },
             'permission_callback' => '__return_true',
@@ -906,16 +906,16 @@ if ( $home_id > 0 ) {
 }
 
 $cid = wp_insert_post( array(
-    'post_type'    => 'wpax_course',
+    'post_type'    => 'wpai_course',
     'post_status'  => 'publish',
     'post_title'   => 'Foundations Video Workshop',
     'post_content' => '<!-- wp:paragraph --><p>Step-by-step recorded video lessons with downloadable notes.</p><!-- /wp:paragraph -->',
 ) );
 if ( $cid && ! is_wp_error( $cid ) ) {
-    update_post_meta( $cid, '_wpax_course_price', '79.00' );
+    update_post_meta( $cid, '_wpai_course_price', '79.00' );
 }
 wp_insert_post( array(
-    'post_type'    => 'wpax_lesson',
+    'post_type'    => 'wpai_lesson',
     'post_status'  => 'publish',
     'post_title'   => 'Lesson 1: Free Preview & Setup',
     'post_content' => '<!-- wp:paragraph --><p>Embed Vimeo, Bunny Stream, or Mux video blocks directly in the Block Editor.</p><!-- /wp:paragraph -->',
@@ -931,7 +931,7 @@ flush_rewrite_rules();
       landingPage: '/',
       meta: {
         title: defaultName,
-        author: 'WPAX',
+        author: 'WPAI',
         description: 'Reproducible WordPress online course & video lesson starter with Abilities API.',
       },
       preferredVersions: { php: '8.3', wp: 'latest' },
@@ -946,18 +946,18 @@ flush_rewrite_rules();
           },
         },
         { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
-        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-course.php', data: muPluginCode },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpai-course.php', data: muPluginCode },
         { step: 'runPHP', code: seedPhp },
       ],
     },
     verify: {
       expected_blogname: defaultName,
       required_pages: ['home', 'courses', 'my-courses', 'contact'],
-      required_post_types: ['wpax_course', 'wpax_lesson'],
-      required_rest_routes: ['/wp/v2/types', '/wpax/v1/courses'],
+      required_post_types: ['wpai_course', 'wpai_lesson'],
+      required_rest_routes: ['/wp/v2/types', '/wpai/v1/courses'],
       require_abilities_api: true,
     },
-    readme: `# ${defaultName}\n\nScaffolded by \`wpax init course\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+    readme: `# ${defaultName}\n\nScaffolded by \`wpai init course\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpai verify .\nwpai export . --out ./dist-wp\n\`\`\`\n`,
   };
 }
 
@@ -965,7 +965,7 @@ function buildMigrationTemplate(): PresetTemplate {
   const defaultName = 'Migrated Editable Site';
   const muPluginCode = `<?php
 /**
- * Plugin Name: WPAX Migration Essentials
+ * Plugin Name: WPAI Migration Essentials
  * Description: Legacy .html -> clean URL 301 redirect support, REST status route, and WP 6.9+ Abilities API registration.
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -984,7 +984,7 @@ add_action( 'template_redirect', function () {
 } );
 
 add_action( 'rest_api_init', function () {
-    register_rest_route( 'wpax/v1', '/migration-status', array(
+    register_rest_route( 'wpai/v1', '/migration-status', array(
         'methods'             => 'GET',
         'permission_callback' => '__return_true',
         'callback'            => function () {
@@ -1000,8 +1000,8 @@ add_action( 'rest_api_init', function () {
 
 add_action( 'wp_abilities_api_categories_init', function () {
     if ( function_exists( 'wp_register_ability_category' ) ) {
-        wp_register_ability_category( 'wpax', array(
-            'label'       => 'WPAX Migration',
+        wp_register_ability_category( 'wpai', array(
+            'label'       => 'WPAI Migration',
             'description' => 'Static-to-WordPress migration metadata abilities.',
         ) );
     }
@@ -1009,10 +1009,10 @@ add_action( 'wp_abilities_api_categories_init', function () {
 
 add_action( 'wp_abilities_api_init', function () {
     if ( function_exists( 'wp_register_ability' ) ) {
-        wp_register_ability( 'wpax/get-migration-status', array(
+        wp_register_ability( 'wpai/get-migration-status', array(
             'label'               => 'Get Migration Status',
             'description'         => 'Returns editable page count and legacy .html redirect status.',
-            'category'            => 'wpax',
+            'category'            => 'wpai',
             'execute_callback'    => function () {
                 $pages = wp_count_posts( 'page' );
                 return array(
@@ -1070,7 +1070,7 @@ flush_rewrite_rules();
       landingPage: '/',
       meta: {
         title: defaultName,
-        author: 'WPAX',
+        author: 'WPAI',
         description: 'Reproducible static-HTML-to-WordPress migration starter with .html 301 redirects and Abilities API.',
       },
       preferredVersions: { php: '8.3', wp: 'latest' },
@@ -1085,17 +1085,17 @@ flush_rewrite_rules();
           },
         },
         { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
-        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-migration.php', data: muPluginCode },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpai-migration.php', data: muPluginCode },
         { step: 'runPHP', code: seedPhp },
       ],
     },
     verify: {
       expected_blogname: defaultName,
       required_pages: ['home', 'about', 'contact'],
-      required_rest_routes: ['/wp/v2/types', '/wpax/v1/migration-status'],
+      required_rest_routes: ['/wp/v2/types', '/wpai/v1/migration-status'],
       require_abilities_api: true,
     },
-    readme: `# ${defaultName}\n\nScaffolded by \`wpax init migration\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+    readme: `# ${defaultName}\n\nScaffolded by \`wpai init migration\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpai verify .\nwpai export . --out ./dist-wp\n\`\`\`\n`,
   };
 }
 
@@ -1166,7 +1166,7 @@ function slugifyPackageName(input: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, '-')
     .replace(/^-+|-+$/g, '');
-  return slug || 'wpax-site';
+  return slug || 'wpai-site';
 }
 
 export function initProject(options: InitOptions): InitResult {
@@ -1240,11 +1240,11 @@ export function initProject(options: InitOptions): InitResult {
     name: slugifyPackageName(siteName),
     version: '0.1.0',
     private: true,
-    description: `${siteName} — WordPress Playground project scaffolded by wpax (${options.preset}).`,
+    description: `${siteName} — WordPress Playground project scaffolded by wpai (${options.preset}).`,
     scripts: {
       start: 'npx -y @wp-playground/cli@3.1.66 server --blueprint=./blueprint.json --blueprint-may-read-adjacent-files --port=9400',
       'run-blueprint': 'npx -y @wp-playground/cli@3.1.66 run-blueprint --blueprint=./blueprint.json --blueprint-may-read-adjacent-files',
-      verify: 'wpax verify .',
+      verify: 'wpai verify .',
     },
   };
   fs.writeFileSync(pkgPath, `${JSON.stringify(pkgJson, null, 2)}\n`, 'utf8');

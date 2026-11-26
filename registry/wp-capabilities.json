@@ -189,9 +189,9 @@
   },
   "provisioning_paths": [
     {
-      "id": "wpax-cli",
-      "name": "WPAX CLI (wraps official @wp-playground/cli)",
-      "command": "wpax init small-business --dir ./site && wpax verify ./site",
+      "id": "wpai-cli",
+      "name": "WPAI CLI (wraps official @wp-playground/cli)",
+      "command": "wpai init small-business --dir ./site && wpai verify ./site",
       "requires_docker": false,
       "requires_mysql": false,
       "requires_node": ">=22.0.0",
@@ -240,7 +240,7 @@
       "database_engine": "SQLite",
       "best_for": "Site owners and developers wanting a free desktop UI + CLI + shareable preview sites.",
       "limitations": [
-        "Desktop-oriented; headless CI/agent sandboxes should prefer @wp-playground/cli or wpax."
+        "Desktop-oriented; headless CI/agent sandboxes should prefer @wp-playground/cli or wpai."
       ],
       "source": "https://developer.wordpress.com/studio/"
     }
@@ -325,10 +325,10 @@
       "signals": ["bakery", "plumber", "yoga studio", "cafe", "charity", "nonprofit", "portfolio", "local service"],
       "core_features": ["Block theme", "Editable Home/Services/About/Contact pages", "Hours & inquiry handler", "Clean permalinks", "Abilities API site-info registration"],
       "recommended_plugins": [
-        { "slug": "wpax-business-essentials", "license_model": "core", "purpose": "Lightweight inline mu-plugin registering business hours, inquiry endpoint, and Abilities API metadata (zero third-party bloat)", "optional": false }
+        { "slug": "wpai-business-essentials", "license_model": "core", "purpose": "Lightweight inline mu-plugin registering business hours, inquiry endpoint, and Abilities API metadata (zero third-party bloat)", "optional": false }
       ],
       "verification_checks": ["core_installed", "blogname_set", "pages_published", "rest_api_200", "abilities_api_available", "no_php_errors"],
-      "git_workflow": "Store blueprint.json, custom block theme/patterns, and mu-plugins in Git; run `wpax verify` in CI."
+      "git_workflow": "Store blueprint.json, custom block theme/patterns, and mu-plugins in Git; run `wpai verify` in CI."
     },
     {
       "id": "commerce",

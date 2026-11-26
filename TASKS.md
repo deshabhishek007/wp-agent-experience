@@ -1,4 +1,4 @@
-# TASKS.md — WPAX Execution Board
+# TASKS.md — WPAI Execution Board
 
 **Priority Rule:** Never compromise P0 for P1 or P2.  
 **Board Status:** All P0, P1, and P2 deliverables completed and verified (`v0.1.0-rc.1`).
@@ -11,7 +11,7 @@
 - [x] **T0.4** Complete Deliverable 1: Upstream technical gap analysis covering all 7 upstream repos/docs + `wordpress.org/llms.txt` (`docs/upstream-gap-analysis.md`)
 - [x] **T0.5** Complete Deliverable 3: Machine-readable WordPress capability registry + JSON Schema Draft 2020-12 + AJV validator (`registry/`)
 - [x] **T0.6** Complete Deliverable 2: Portable platform-selection agent skill (`skills/wp-platform-selection/`)
-- [x] **T0.7** Complete Deliverable 4: Minimal TypeScript CLI wrapping official `@wp-playground/cli` (`packages/wpax-cli/`) with `init`, `validate`, `boot`, `verify`, `catalog`, `check-fit`, `validate-registry`
+- [x] **T0.7** Complete Deliverable 4: Minimal TypeScript CLI wrapping official `@wp-playground/cli` (`packages/wpai-cli/`) with `init`, `validate`, `boot`, `verify`, `catalog`, `check-fit`, `validate-registry`
 - [x] **T0.8** Complete Deliverable 5 (core): First verified reproducible blueprint (`blueprints/small-business/`)
 - [x] **T0.9** Complete Deliverable 6 (core): Automated unit (`19/19`) + functional WordPress Playground verification tests (`4/4`)
 - [x] **T0.10** Complete Deliverable 7: Benchmark integration with `apeatling/wp-agent-benchmark` (12 verbatim prompts, ported deterministic detector, functional verifier, `19/19` Python unit tests, `wpab` overlay & `choose-run` schema exporter)

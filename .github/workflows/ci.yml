@@ -1,4 +1,4 @@
-name: WPAX CI
+name: WPAI CI
 
 on:
   push:

@@ -7,12 +7,12 @@
     "contact"
   ],
   "required_post_types": [
-    "wpax_course",
-    "wpax_lesson"
+    "wpai_course",
+    "wpai_lesson"
   ],
   "required_rest_routes": [
     "/wp/v2/types",
-    "/wpax/v1/courses"
+    "/wpai/v1/courses"
   ],
   "require_abilities_api": true
 }

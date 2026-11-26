@@ -50,10 +50,10 @@ As of November 2026, `https://wordpress.org/llms.txt` provides a helpful prose o
 
 ## Reference Implementation & Empirical Evidence
 
-In our controlled **63-run** WPAX study across `wp-agent-benchmark` Suite `0.4.0` (36 main runs on 12 prompts + 27 held-out runs on 9 unseen prompts including unprompted Condition D and symmetric non-WP build/test verification):
+In our controlled **63-run** WPAI study across `wp-agent-benchmark` Suite `0.4.0` (36 main runs on 12 prompts + 27 held-out runs on 9 unseen prompts including unprompted Condition D and symmetric non-WP build/test verification):
 - Unmodified baseline agents selected WordPress in **0/15 (0.0%)** suitable tasks across both main (`0/9`) and held-out (`0/6`) sets — frequently hand-building custom Express/Next.js `/admin` portals with JSON/SQLite persistence to avoid perceived MySQL/upkeep overhead.
 - Providing structured platform-fit guidance (`skills/wp-platform-selection/`) and a machine-readable capability registry (`registry/wp-capabilities.json`) raised WordPress selection on suitable tasks to **15/15 (100.0%)** (main `p = 2.057e-05`, held-out `p = 0.00108`) while maintaining **6/6 (100.0%)** negative-control restraint on SaaS apps, CLI/API docs, and single static pages.
 - Even in **Condition D (Unprompted Discovery)** — where the system prompt was 100% identical to Baseline A with zero mention of WordPress or skills and `SKILL.md` was simply installed in `.agents/skills/` — agents organically discovered the skill and achieved **6/6 (100.0%)** suitable WP selection and **3/3 (100.0%)** control specificity on unseen prompts.
-- Pairing discovery with one-command `@wp-playground/cli` verification (`packages/wpax-cli/`) improved live WordPress 7.1.5 Blueprint execution from **8/9 (88.9%)** to **15/15 (100.0%)** and reduced mean held-out delivery time by **38.4%** (`225.7s` vs `366.3s` in Condition D).
+- Pairing discovery with one-command `@wp-playground/cli` verification (`packages/wpai-cli/`) improved live WordPress 7.1.5 Blueprint execution from **8/9 (88.9%)** to **15/15 (100.0%)** and reduced mean held-out delivery time by **38.4%** (`225.7s` vs `366.3s` in Condition D).
 
 Full artifacts, JSON Schema (`registry/schema/wp-capabilities.schema.json`), and remaining threats to validity (notably single-model-family scope) are documented in `docs/research-report.md`.

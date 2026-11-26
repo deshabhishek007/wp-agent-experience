@@ -8,9 +8,9 @@ import stat
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ENV_ROOT = Path("/home/antigravity/wpax-heldout-env")
-SANDBOX_ROOT = Path("/home/antigravity/wpax-heldout-sandboxes")
-WPAX_BIN_DIR = Path("/tmp/wpax-bin")
+ENV_ROOT = Path("/home/antigravity/wpai-heldout-env")
+SANDBOX_ROOT = Path("/home/antigravity/wpai-heldout-sandboxes")
+WPAI_BIN_DIR = Path("/tmp/wpai-bin")
 
 
 def main() -> None:
@@ -30,15 +30,15 @@ def main() -> None:
         ENV_ROOT / "registry" / "wp-capabilities.json",
     )
 
-    # 2. Expose clean wpax wrapper binary
-    WPAX_BIN_DIR.mkdir(parents=True, exist_ok=True)
-    wpax_wrapper = WPAX_BIN_DIR / "wpax"
-    cli_js = REPO_ROOT / "packages" / "wpax-cli" / "dist" / "cli.js"
-    wpax_wrapper.write_text(
+    # 2. Expose clean wpai wrapper binary
+    WPAI_BIN_DIR.mkdir(parents=True, exist_ok=True)
+    wpai_wrapper = WPAI_BIN_DIR / "wpai"
+    cli_js = REPO_ROOT / "packages" / "wpai-cli" / "dist" / "cli.js"
+    wpai_wrapper.write_text(
         f"#!/usr/bin/env bash\nexec node \"{cli_js}\" \"$@\"\n",
         encoding="utf-8",
     )
-    wpax_wrapper.chmod(wpax_wrapper.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    wpai_wrapper.chmod(wpai_wrapper.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     # 3. Create 27 fresh isolated sandbox directories (A, C, D x 9 stratified held-out prompts)
     if SANDBOX_ROOT.exists():
@@ -69,7 +69,7 @@ def main() -> None:
         "ok": True,
         "env_root": str(ENV_ROOT),
         "sandbox_root": str(SANDBOX_ROOT),
-        "wpax_bin": str(wpax_wrapper),
+        "wpai_bin": str(wpai_wrapper),
         "eval_prompts": [p["id"] for p in prompts],
         "sandboxes_created": created,
     }, indent=2))

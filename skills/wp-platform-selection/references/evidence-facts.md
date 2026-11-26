@@ -4,8 +4,8 @@ All statements below are verified against official documentation and primary rep
 
 ## 1. Local Provisioning Without MySQL or Docker
 - **WordPress Playground CLI** (`@wp-playground/cli`) runs WordPress locally using Node.js, WebAssembly PHP (8.3 default), and SQLite — **no MySQL server, Apache, PHP install, or Docker required**.
-- Headless validation runs via `npx @wp-playground/cli@latest run-blueprint --blueprint=./blueprint.json` (or `wpax verify`).
-- Interactive local server runs via `npx @wp-playground/cli@latest server --blueprint=./blueprint.json` (or `wpax boot`).
+- Headless validation runs via `npx @wp-playground/cli@latest run-blueprint --blueprint=./blueprint.json` (or `wpai verify`).
+- Interactive local server runs via `npx @wp-playground/cli@latest server --blueprint=./blueprint.json` (or `wpai boot`).
 - **Honest limitation:** SQLite allows a single writer at a time and is ideal for local development, CI verification, demos, and low-traffic sites; production dynamic or WooCommerce sites should use MySQL 8.0+ / MariaDB 10.11+ on managed WordPress hosting.
 
 ## 2. Security & Maintenance
