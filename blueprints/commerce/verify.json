@@ -1,0 +1,26 @@
+{
+  "blueprint": "commerce",
+  "expected_blogname": "Northline Bike Parts",
+  "required_pages": [
+    "shop",
+    "shipping",
+    "contact"
+  ],
+  "required_post_types": [
+    "wpax_product"
+  ],
+  "required_posts_min": {
+    "wpax_product": 4
+  },
+  "required_rest_routes": [
+    "/wp/v2/wpax_product",
+    "/wpax/v1/shipping-quote"
+  ],
+  "require_abilities_api": true,
+  "required_abilities": [
+    "wpax/list-products"
+  ],
+  "required_mu_plugins": [
+    "wpax-store.php"
+  ]
+}

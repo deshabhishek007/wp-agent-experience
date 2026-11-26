@@ -1,0 +1,45 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "landingPage": "/shop/",
+  "login": true,
+  "steps": [
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Northline Bike Parts (WooCommerce)",
+        "blogdescription": "Full WooCommerce storefront with inventory management and weight-based shipping",
+        "permalink_structure": "/%postname%/",
+        "woocommerce_weight_unit": "kg",
+        "woocommerce_currency": "USD"
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "weight-based-shipping-for-woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\nrequire '/wordpress/wp-load.php';\n\nif ( class_exists( 'WC_Product_Simple' ) ) {\n\t$seed = array(\n\t\tarray( 'sku' => 'NL-CAS-1142', 'name' => 'Alloy 11-Speed Cassette (11-42T)', 'price' => '74.00', 'stock' => 28, 'weight' => '0.44' ),\n\t\tarray( 'sku' => 'NL-BRK-4P180', 'name' => 'Hydraulic Disc Brake Set', 'price' => '189.00', 'stock' => 14, 'weight' => '1.15' ),\n\t\tarray( 'sku' => 'NL-WHL-700G', 'name' => '700c Tubeless Gravel Wheelset', 'price' => '349.00', 'stock' => 7, 'weight' => '2.35' ),\n\t\tarray( 'sku' => 'NL-CHN-11WX', 'name' => 'Pre-Waxed 11-Speed Chain', 'price' => '36.50', 'stock' => 64, 'weight' => '0.27' ),\n\t);\n\tforeach ( $seed as $item ) {\n\t\tif ( wc_get_product_id_by_sku( $item['sku'] ) ) {\n\t\t\tcontinue;\n\t\t}\n\t\t$product = new WC_Product_Simple();\n\t\t$product->set_name( $item['name'] );\n\t\t$product->set_sku( $item['sku'] );\n\t\t$product->set_regular_price( $item['price'] );\n\t\t$product->set_manage_stock( true );\n\t\t$product->set_stock_quantity( $item['stock'] );\n\t\t$product->set_weight( $item['weight'] );\n\t\t$product->set_status( 'publish' );\n\t\t$product->save();\n\t}\n}\nflush_rewrite_rules( true );\n"
+    }
+  ]
+}

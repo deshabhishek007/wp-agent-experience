@@ -1,0 +1,30 @@
+{
+  "blueprint": "publishing",
+  "expected_blogname": "Rivertown Dispatch",
+  "required_pages": [
+    "about",
+    "editorial-policy"
+  ],
+  "required_categories": [
+    "local-news",
+    "community",
+    "culture",
+    "opinion"
+  ],
+  "required_users_min": 4,
+  "required_posts_min": {
+    "post": 4
+  },
+  "required_rest_routes": [
+    "/wp/v2/posts",
+    "/wp/v2/categories",
+    "/wpax/v1/editorial-summary"
+  ],
+  "require_abilities_api": true,
+  "required_abilities": [
+    "wpax/editorial-summary"
+  ],
+  "required_mu_plugins": [
+    "wpax-publishing.php"
+  ]
+}
