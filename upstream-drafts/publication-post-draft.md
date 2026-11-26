@@ -47,11 +47,21 @@ We evaluated 12 verbatim platform-neutral prompts from `wp-agent-benchmark` (9 W
 
 ---
 
+## Follow-Up Validation: Held-Out Prompts & Unprompted Discovery (`n = 27`)
+
+To verify that these gains were not an artifact of prompt overlap or explicit skill instructions, we ran a 27-trial follow-up on **9 completely unseen** `Suite 0.4.0` prompts (6 suitable + 3 controls across all 9 kinds) with **strictly unmodified** skills and **symmetric verification** (running real `npm run build` / `npm test` on non-WordPress outputs):
+
+- **Condition A (Held-Out Baseline):** `0/6 (0.0%)` suitable WP, `3/3 (100.0%)` controls, `9/9` symmetric verified (`314.6s` mean).
+- **Condition C (Held-Out Skill + `wpax`):** `6/6 (100.0%)` suitable WP (`p = 0.00108`), `3/3 (100.0%)` controls, `9/9` verified (`225.7s` mean — **38.4% faster than Condition D**).
+- **Condition D (Unprompted Discovery — identical system prompt to Baseline A, skill installed silently in `.agents/skills/`):** `6/6 (100.0%)` suitable WP (`p = 0.00108`), `3/3 (100.0%)` controls, `9/9` verified (`366.3s` mean). Even on `course-2` and `page-1` where the static keyword helper returned `needs_clarification`, agents reasoned directly from `SKILL.md` to make the right call.
+
+---
+
 ## Limitations & What Needs Testing Next
 
 To keep these findings grounded:
-- **In-distribution prompt overlap:** Our suitability matcher was validated against these 12 benchmark prompts during development, and agents in Conditions B and C were explicitly instructed to consult the installed skill. Organic, unprompted discovery and held-out prompt sets will show smaller effect sizes.
-- **Single model family & small `n`:** All 36 runs executed within a single model family (`n = 9` suitable + `n = 3` controls per arm). Running our `benchmarks/wpab-integration/` Docker overlay across all 7 multi-vendor agents in `wp-agent-benchmark` is the essential next validation step.
+- **Single model family & small `n`:** All 63 runs (36 main + 27 held-out) executed within a single model family. Running our `benchmarks/wpab-integration/` Docker overlay across all 7 multi-vendor agents in `wp-agent-benchmark` (Claude, GPT, Gemini, open-weight) is the essential next validation step.
+- **Workspace-local vs. open-web discovery:** Condition D proves agents organically discover a skill installed in `.agents/skills/`, but does not yet measure discovery from `wordpress.org/llms.txt` or a remote MCP server with zero local setup.
 - **Local SQLite vs production MySQL:** WordPress Playground's WebAssembly + SQLite runtime makes local agent provisioning and CI verification trivial, but production multi-user/WooCommerce deployments still require managed WordPress or MySQL/MariaDB hosting.
 
-All code, JSON schemas, blueprints, raw `runs.jsonl` records, statistical scripts, and draft upstream contributions are reproducible from the WPAX repository.
+All code, JSON schemas, blueprints, raw `runs.jsonl` / `runs-heldout.jsonl` records, statistical scripts, and draft upstream contributions are reproducible from the WPAX repository.
