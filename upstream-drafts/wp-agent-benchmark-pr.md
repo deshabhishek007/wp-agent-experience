@@ -27,6 +27,14 @@ We built a lightweight, non-invasive integration overlay (`benchmarks/wpab-integ
 2. **Schema-Compatible Record Exporter (`export_to_wpab.py`):** Converts WPAX controlled run logs into `schema/choose-run.schema.json`-compatible records tagged with explicit condition metadata.
 3. **Live Functional Verification Hook:** Extends file-only `detect()` checks with optional `wpax verify` execution in WordPress Playground WASM to confirm that generated WordPress blueprints actually boot cleanly and fulfill prompt requirements.
 
-### Preliminary Results
+### Controlled 36-Run Results (`Suite 0.4.0` Prompts)
 
-*(Populate with final verified 36-run A/B/C empirical results and Fisher's exact test p-values from `docs/research-report.md` prior to submission.)*
+Evaluating 12 verbatim `Suite 0.4.0` tasks (9 WordPress-suitable + 3 negative controls: `app-3`, `docs-1`, `page-2`) across Conditions A, B, and C (`benchmarks/results/runs.jsonl`, exported to `choose-run.schema.json` format in `benchmarks/results/wpab-choose-export.jsonl`):
+
+| Condition | Suitable WP Selection (95% Wilson CI) | Negative-Control Specificity | Live Playground Verified (WP Outputs) | Fisher's One-Sided `p` vs A |
+|---|---|---|---|---|
+| **A (Baseline)** | 0/9 (0.0%) [0.0%, 29.9%] | 3/3 (100.0%) | n/a (0 WP outputs) | — |
+| **B (Skill + Registry)** | 9/9 (100.0%) [70.1%, 100.0%] | 3/3 (100.0%) | 8/9 (88.9%) | `2.057e-05` |
+| **C (Skill + Registry + `wpax`)** | 9/9 (100.0%) [70.1%, 100.0%] | 3/3 (100.0%) | 9/9 (100.0%) | `2.057e-05` |
+
+Crucially, live Playground verification distinguished Condition B from Condition C: in `B-business-3`, an agent authored a 16-step Blueprint without a runtime tool and hit a step #16 PHP fatal error (`exit code 255`) upon independent verification, whereas all 9 Condition C runs self-verified via `wpax verify` before completion. We would welcome feedback on running these overlays across the full multi-vendor Harbor matrix (`claude`, `codex`, `gemini`, `opencode`, `cursor`).

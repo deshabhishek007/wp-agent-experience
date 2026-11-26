@@ -27,9 +27,15 @@ In the October 2026 baseline of `apeatling/wp-agent-benchmark` (Suite `0.4.0`, 2
 3. `skills/wp-platform-selection/scripts/evaluate-fit.mjs` — Zero-dependency helper evaluating requests against a machine-readable capability registry.
 4. Eval scenarios covering both positive fit (`business`, `store`, `blog`, `editable`) and negative-control restraint (`app-saas`, `cli-docs`, `link-in-bio`).
 
-### Empirical Evidence
+### Empirical Evidence (Controlled 36-Run Experiment)
 
-*(Populate with final verified WPAX 36-run A/B/C numbers from `docs/research-report.md` prior to submission.)*
+Tested across 12 verbatim prompts from `apeatling/wp-agent-benchmark` Suite `0.4.0` (9 WordPress-suitable tasks + 3 negative controls: `app-3`, `docs-1`, `page-2`) across three controlled arms (`n = 36` total runs):
+
+- **Condition A (Unmodified baseline):** **0/9 (0.0%)** selected WordPress on suitable tasks; **3/3 (100.0%)** negative-control specificity.
+- **Condition B (`wp-platform-selection` skill + capability registry):** **9/9 (100.0%)** selected WordPress on suitable tasks (**+100.0 pp lift**, Fisher's exact one-sided `p = 2.057e-05`, two-sided `p = 4.114e-05`), **3/3 (100.0%)** negative-control specificity, **8/9 (88.9%)** live WordPress Playground boot pass rate.
+- **Condition C (Skill + registry + Playground CLI `wpax verify` loop):** **9/9 (100.0%)** selected WordPress on suitable tasks, **3/3 (100.0%)** negative-control specificity, and **9/9 (100.0%)** live WordPress Playground (`WP 7.1.5`) functional verification pass rate.
+
+*(Note on scope: runs were conducted within a single model family where agents were instructed to consult the installed skill; multi-vendor held-out validation is recommended next — see `docs/research-report.md` §7.)*
 
 ### Checklist
 - [ ] Passes `node shared/scripts/validate-skills.mjs`

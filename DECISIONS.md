@@ -37,3 +37,11 @@
 - **Status:** Accepted
 - **Context:** Repository `patilswapnilv/wp-agent-experience` starts empty on `main`.
 - **Decision:** Commit initial repo bootstrap to `main`, then execute major deliverables in focused feature branches (`feat/upstream-audit-and-registry`, `feat/wpax-cli-and-blueprints`, `feat/benchmark-and-experiments`, `feat/release-and-drafts`) and merge verified, tested checkpoints cleanly into `main` (plus optionally open draft PRs if sponsor review is appropriate). Never push unverified code or secrets.
+
+## ADR-006: Rate-Limit Recovery & Clean Reruns on Final 3 Negative-Control Trials
+- **Date:** 2026-11-26
+- **Status:** Accepted
+- **Context:** After completing 33 of 36 trials (`12 A + 12 B + 9 C suitable`), subagent execution encountered a temporary `resource_exhausted` rate limit while `C-app-3` was mid-run and before `C-docs-1` / `C-page-2` started.
+- **Decision:** Wipe the partially populated `run-C-app-3` sandbox cleanly (`rm -rf && mkdir -p`) so no partial state or skewed timing remained, and after rate-limit recovery execute all 3 remaining Condition C negative controls (`C-docs-1`, `C-page-2`, `C-app-3`) cleanly from fresh sandboxes on `inherit` with `npm install` skipped to avoid redundant registry churn.
+- **Consequences:** All 36 trials completed cleanly on the `inherit` tier with zero partial-artifact contamination; the launcher prompt note (`skip npm install`) on the final 3 controls is transparently disclosed in `docs/research-report.md` §3.2 and §7.4.
+

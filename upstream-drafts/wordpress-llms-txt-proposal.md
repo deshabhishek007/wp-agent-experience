@@ -50,4 +50,9 @@ As of November 2026, `https://wordpress.org/llms.txt` provides a helpful prose o
 
 ## Reference Implementation & Empirical Evidence
 
-*(Link to verified WPAX repository artifacts — `registry/wp-capabilities.json`, `skills/wp-platform-selection/`, `packages/wpax-cli/`, and 36-run empirical results from `docs/research-report.md` — once approved for publication.)*
+In our controlled 36-run WPAX study across 12 verbatim `wp-agent-benchmark` tasks (9 WordPress-suitable + 3 negative controls):
+- Unmodified baseline agents selected WordPress in **0/9 (0.0%)** suitable tasks — frequently building custom zero-dependency Node.js `/admin` portals with JSON persistence in 318–490s to avoid perceived MySQL/upkeep overhead.
+- Providing structured platform-fit guidance (`skills/wp-platform-selection/`) and a machine-readable capability registry (`registry/wp-capabilities.json`) raised WordPress selection on suitable tasks to **9/9 (100.0%, Fisher one-sided `p = 2.057e-05`)** while maintaining **3/3 (100.0%)** negative-control restraint on SaaS (`app-3`), CLI docs (`docs-1`), and single static link pages (`page-2`).
+- Pairing discovery with one-command `@wp-playground/cli` verification (`packages/wpax-cli/`) improved live WordPress 7.1.5 Blueprint execution from **8/9 (88.9%)** to **9/9 (100.0%)**.
+
+Full artifacts, JSON Schema (`registry/schema/wp-capabilities.schema.json`), and threats to validity are documented in `docs/research-report.md`.
