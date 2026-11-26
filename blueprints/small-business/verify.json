@@ -1,0 +1,22 @@
+{
+  "blueprint": "small-business",
+  "expected_blogname": "Hearthstone Bakery",
+  "required_pages": [
+    "home",
+    "services",
+    "about",
+    "contact",
+    "updates"
+  ],
+  "required_rest_routes": [
+    "/wp/v2/pages",
+    "/wpax/v1/business-info"
+  ],
+  "require_abilities_api": true,
+  "required_abilities": [
+    "wpax/get-business-info"
+  ],
+  "required_mu_plugins": [
+    "wpax-business.php"
+  ]
+}

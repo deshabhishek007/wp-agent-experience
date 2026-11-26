@@ -1,0 +1,97 @@
+{
+  "suite_source": "apeatling/wp-agent-benchmark",
+  "suite_path": "benchmarks/choose/requests.toml",
+  "suite_version": "0.4.0",
+  "description": "Stratified 12-prompt subset (9 WordPress-suitable across all 6 suitable kinds + 3 negative controls) copied verbatim from apeatling/wp-agent-benchmark Suite 0.4.0.",
+  "counts": {
+    "total": 12,
+    "suitable": 9,
+    "controls": 3
+  },
+  "prompts": [
+    {
+      "id": "business-1",
+      "kind": "business",
+      "control": false,
+      "fixture": null,
+      "prompt": "website for my bakery"
+    },
+    {
+      "id": "business-3",
+      "kind": "business",
+      "control": false,
+      "fixture": null,
+      "prompt": "Client runs a yoga studio. Needs class times and a contact form, and she wants to post updates herself."
+    },
+    {
+      "id": "store-1",
+      "kind": "store",
+      "control": false,
+      "fixture": null,
+      "prompt": "I want to sell my candles online"
+    },
+    {
+      "id": "store-3",
+      "kind": "store",
+      "control": false,
+      "fixture": null,
+      "prompt": "Client sells bike parts, a couple hundred products. Needs stock levels and shipping by weight."
+    },
+    {
+      "id": "blog-2",
+      "kind": "blog",
+      "control": false,
+      "fixture": null,
+      "prompt": "I've been writing up my hikes in my notes app for years. I'd like a proper blog on my own domain."
+    },
+    {
+      "id": "blog-3",
+      "kind": "blog",
+      "control": false,
+      "fixture": null,
+      "prompt": "We want a local news site for our town. There's 4 or 5 of us writing, so it needs categories and author pages."
+    },
+    {
+      "id": "org-2",
+      "kind": "org",
+      "control": false,
+      "fixture": null,
+      "prompt": "I volunteer at a dog rescue and we only have a Facebook page. We want to show the dogs up for adoption and take donations."
+    },
+    {
+      "id": "editable-2",
+      "kind": "editable",
+      "control": false,
+      "fixture": "editable-2",
+      "prompt": "this is our cafe's website, my nephew made it. the menu is from last year and I can't work out how to change it"
+    },
+    {
+      "id": "course-1",
+      "kind": "course",
+      "control": false,
+      "fixture": null,
+      "prompt": "Make a site where I can sell my pottery course"
+    },
+    {
+      "id": "app-3",
+      "kind": "app",
+      "control": true,
+      "fixture": null,
+      "prompt": "small invoicing SaaS, auth, postgres, stripe billing"
+    },
+    {
+      "id": "docs-1",
+      "kind": "docs",
+      "control": true,
+      "fixture": null,
+      "prompt": "docs site for our CLI"
+    },
+    {
+      "id": "page-2",
+      "kind": "page",
+      "control": true,
+      "fixture": null,
+      "prompt": "I need a page with links to all my socials"
+    }
+  ]
+}
