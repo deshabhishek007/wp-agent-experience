@@ -1,0 +1,178 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import type { PresetName } from './types.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/**
+ * Walk upward from a starting directory looking for a target relative path.
+ */
+function walkUpFor(startDir: string, relativeTarget: string): string | null {
+  let current = path.resolve(startDir);
+  while (true) {
+    const candidate = path.join(current, relativeTarget);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) {
+      return null;
+    }
+    current = parent;
+  }
+}
+
+/**
+ * Locate the WPAX repository root containing registry/wp-capabilities.json.
+ */
+export function findRepoRoot(): string | null {
+  const fromCwd = walkUpFor(process.cwd(), 'registry/wp-capabilities.json');
+  if (fromCwd) {
+    return path.dirname(path.dirname(fromCwd));
+  }
+  const fromPkg = walkUpFor(__dirname, 'registry/wp-capabilities.json');
+  if (fromPkg) {
+    return path.dirname(path.dirname(fromPkg));
+  }
+  return null;
+}
+
+export function findRegistryPath(explicitPath?: string): string {
+  if (explicitPath) {
+    const resolved = path.resolve(explicitPath);
+    if (!fs.existsSync(resolved)) {
+      throw new Error(`Registry file not found: ${resolved}`);
+    }
+    return resolved;
+  }
+
+  const fromCwd = walkUpFor(process.cwd(), 'registry/wp-capabilities.json');
+  if (fromCwd) return fromCwd;
+
+  const fromPkg = walkUpFor(__dirname, 'registry/wp-capabilities.json');
+  if (fromPkg) return fromPkg;
+
+  throw new Error(
+    'Could not locate registry/wp-capabilities.json. Pass an explicit path or run from inside the wp-agent-experience repository.'
+  );
+}
+
+export function findRegistrySchemaPath(explicitPath?: string): string {
+  if (explicitPath) {
+    const resolved = path.resolve(explicitPath);
+    if (!fs.existsSync(resolved)) {
+      throw new Error(`Registry schema file not found: ${resolved}`);
+    }
+    return resolved;
+  }
+
+  const fromCwd = walkUpFor(process.cwd(), 'registry/schema/wp-capabilities.schema.json');
+  if (fromCwd) return fromCwd;
+
+  const fromPkg = walkUpFor(__dirname, 'registry/schema/wp-capabilities.schema.json');
+  if (fromPkg) return fromPkg;
+
+  throw new Error(
+    'Could not locate registry/schema/wp-capabilities.schema.json.'
+  );
+}
+
+export function findBlueprintPresetDir(preset: PresetName): string | null {
+  const rel = path.join('blueprints', preset);
+  const fromCwd = walkUpFor(process.cwd(), path.join(rel, 'blueprint.json'));
+  if (fromCwd) return path.dirname(fromCwd);
+
+  const fromPkg = walkUpFor(__dirname, path.join(rel, 'blueprint.json'));
+  if (fromPkg) return path.dirname(fromPkg);
+
+  return null;
+}
+
+export interface PlaygroundInvocation {
+  command: string;
+  baseArgs: string[];
+  source: 'local-bin' | 'npx-fallback';
+}
+
+/**
+ * Resolve the official @wp-playground/cli binary (pinned to 3.1.66).
+ */
+export function findPlaygroundCli(): PlaygroundInvocation {
+  const binNames = ['wp-playground-cli', 'wp-playground'];
+  const searchRoots = [__dirname, process.cwd()];
+
+  for (const root of searchRoots) {
+    for (const binName of binNames) {
+      const binPath = walkUpFor(root, path.join('node_modules', '.bin', binName));
+      if (binPath) {
+        return {
+          command: binPath,
+          baseArgs: [],
+          source: 'local-bin',
+        };
+      }
+    }
+  }
+
+  return {
+    command: 'npx',
+    baseArgs: ['-y', '@wp-playground/cli@3.1.66'],
+    source: 'npx-fallback',
+  };
+}
+
+export interface ResolvedBlueprintTarget {
+  blueprintPath: string;
+  baseDir: string;
+  verifySpecPath: string | null;
+}
+
+/**
+ * Resolve either a project directory (containing blueprint.json) or a direct .json file path.
+ */
+export function resolveBlueprintTarget(
+  dirOrFile: string,
+  explicitChecksPath?: string
+): ResolvedBlueprintTarget {
+  const abs = path.resolve(dirOrFile);
+  if (!fs.existsSync(abs)) {
+    throw new Error(`Target does not exist: ${abs}`);
+  }
+
+  const stat = fs.statSync(abs);
+  let blueprintPath: string;
+  let baseDir: string;
+
+  if (stat.isDirectory()) {
+    baseDir = abs;
+    blueprintPath = path.join(abs, 'blueprint.json');
+    if (!fs.existsSync(blueprintPath)) {
+      throw new Error(`No blueprint.json found in directory: ${abs}`);
+    }
+  } else {
+    blueprintPath = abs;
+    baseDir = path.dirname(abs);
+  }
+
+  let verifySpecPath: string | null = null;
+  if (explicitChecksPath) {
+    const resolvedChecks = path.resolve(explicitChecksPath);
+    if (!fs.existsSync(resolvedChecks)) {
+      throw new Error(`Verification checks file not found: ${resolvedChecks}`);
+    }
+    verifySpecPath = resolvedChecks;
+  } else {
+    const adjacent = path.join(baseDir, 'verify.json');
+    if (fs.existsSync(adjacent)) {
+      verifySpecPath = adjacent;
+    }
+  }
+
+  return {
+    blueprintPath,
+    baseDir,
+    verifySpecPath,
+  };
+}
