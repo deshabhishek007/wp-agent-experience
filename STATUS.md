@@ -1,5 +1,29 @@
 # STATUS.md — Mission Status Log
 
+## Checkpoint `v0.2.0` — Tracks 1, 2, and 3 Complete (2026-11-26T14:07Z)
+
+### Track 1: Bulletproof the Evidence (Complete)
+- **Held-Out Prompt Suite:** Fetched all 16 unseen `apeatling/wp-agent-benchmark` Suite `0.4.0` prompts + unmodified fixtures (`editable-1`, `editable-3`, `docs-3`) into `benchmarks/prompts-heldout.json`.
+- **Pre-Test OOD `evaluate-fit.mjs` Diagnostic (unmodified):** `15/16` (`93.8%`) — `9/10` suitable recall, `6/6` control specificity (`course-2` and `page-1` returned `needs_clarification`).
+- **27-Run Held-Out + Condition D Study** (`benchmarks/results/runs-heldout.jsonl`, `summary-heldout.json`, symmetric build/test verification enabled):
+  - **Condition A (Held-Out Baseline):** `0/6 (0.0%)` suitable WP, `3/3 (100.0%)` controls, `9/9` symmetric verified (`314.6s` mean).
+  - **Condition C (Held-Out Skill + `wpax`):** `6/6 (100.0%)` suitable WP (`p = 0.00108`), `3/3 (100.0%)` controls, `9/9` verified (`225.7s` mean — **38.4% faster than Condition D**).
+  - **Condition D (Held-Out Unprompted Discovery — 100% identical system prompt to Condition A, skill installed silently in `.agents/skills/`):** `6/6 (100.0%)` suitable WP (`p = 0.00108`), `3/3 (100.0%)` controls, `9/9` verified (`366.3s` mean).
+- **Combined 63-Run Totals:** Baseline A `0/15 (0.0%)` vs Condition C `15/15 (100.0%)` vs Unprompted Condition D `6/6 (100.0%)`, with `100%` control specificity across all arms.
+- **CLI Fix from Real Data:** Added sibling `wp-content/themes/*`, `wp-content/plugins/*`, and `wp-content/mu-plugins/` auto-mounting to `wpax verify`.
+
+### Track 2: Staged Upstream Contributions (Refreshed & Ready for Sponsor Approval)
+- Updated all 4 drafts in `upstream-drafts/` (`wordpress-agent-skills-pr.md`, `wp-agent-benchmark-pr.md`, `wordpress-llms-txt-proposal.md`, `publication-post-draft.md`) and `upstream-drafts/README.md` with the 63-run held-out + Condition D + symmetric verification evidence.
+- **Governance Gate Respected:** Zero external PRs opened, zero visibility/license changes made without explicit sponsor approval.
+
+### Track 3: Productize `wpax` (`v0.2.0`, Complete)
+- **Native MCP Server (`wpax mcp`):** Zero-dependency JSON-RPC 2.0 over stdio server exposing 6 tools (`wpax_check_fit`, `wpax_catalog`, `wpax_init`, `wpax_validate`, `wpax_verify`, `wpax_export`) and 2 resources (`wpax://registry/capabilities`, `wpax://skill/platform-selection`).
+- **Production Handoff Bridge (`wpax export`):** Extracts `wp-content/` themes/plugins/mu-plugins from blueprints + generates executable WP-CLI `setup.sh` and `DEPLOY.md` MySQL/managed-hosting checklist.
+- **3 New Live-Verified Blueprint Presets:** `blueprints/nonprofit/`, `blueprints/course/`, and `blueprints/migration/` (all 6 presets validated and live-verified on WordPress `7.1.5` + PHP `8.3.36` + Abilities API).
+- **Full Test Suite:** `25/25` Node unit tests + `6/6` blueprint validations + `19/19` Python harness unit tests passing (`0` failures).
+
+---
+
 ## Checkpoint Final — `v0.1.0-rc.1` Release Candidate & 36/36 Experiments Complete (T+5.3h | 2026-11-26T13:00Z)
 
 ### Completed Deliverables (12/12 Complete)

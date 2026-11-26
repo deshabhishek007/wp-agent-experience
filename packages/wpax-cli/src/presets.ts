@@ -619,7 +619,484 @@ export function getBuiltInPreset(preset: PresetName): PresetTemplate {
       return buildCommerceTemplate();
     case 'publishing':
       return buildPublishingTemplate();
+    case 'nonprofit':
+      return buildNonprofitTemplate();
+    case 'course':
+      return buildCourseTemplate();
+    case 'migration':
+      return buildMigrationTemplate();
   }
+}
+
+function buildNonprofitTemplate(): PresetTemplate {
+  const defaultName = 'Community Nonprofit Starter';
+  const muPluginCode = `<?php
+/**
+ * Plugin Name: WPAX Nonprofit Essentials
+ * Description: Events, donation pledges, volunteer signups, REST API endpoints, and WP 6.9+ Abilities API registration.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+add_action( 'init', function () {
+    register_post_type( 'wpax_event', array(
+        'labels'       => array( 'name' => 'Events', 'singular_name' => 'Event' ),
+        'public'       => true,
+        'show_in_rest' => true,
+        'supports'     => array( 'title', 'editor', 'excerpt', 'custom-fields' ),
+        'has_archive'  => true,
+        'rewrite'      => array( 'slug' => 'events' ),
+    ) );
+    register_post_type( 'wpax_donation', array(
+        'labels'       => array( 'name' => 'Donations', 'singular_name' => 'Donation' ),
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => false,
+        'supports'     => array( 'title', 'custom-fields' ),
+    ) );
+    register_post_type( 'wpax_volunteer', array(
+        'labels'       => array( 'name' => 'Volunteers', 'singular_name' => 'Volunteer' ),
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_rest' => false,
+        'supports'     => array( 'title', 'custom-fields' ),
+    ) );
+} );
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'wpax/v1', '/nonprofit-summary', array(
+        'methods'             => 'GET',
+        'permission_callback' => '__return_true',
+        'callback'            => function () {
+            $events = wp_count_posts( 'wpax_event' );
+            return rest_ensure_response( array(
+                'organization'    => get_bloginfo( 'name' ),
+                'upcoming_events' => isset( $events->publish ) ? (int) $events->publish : 0,
+            ) );
+        },
+    ) );
+} );
+
+add_action( 'wp_abilities_api_categories_init', function () {
+    if ( function_exists( 'wp_register_ability_category' ) ) {
+        wp_register_ability_category( 'wpax', array(
+            'label'       => 'WPAX Nonprofit',
+            'description' => 'Nonprofit events, donations, and volunteer abilities.',
+        ) );
+    }
+} );
+
+add_action( 'wp_abilities_api_init', function () {
+    if ( function_exists( 'wp_register_ability' ) ) {
+        wp_register_ability( 'wpax/get-nonprofit-summary', array(
+            'label'               => 'Get Nonprofit Summary',
+            'description'         => 'Returns organization name and published event count.',
+            'category'            => 'wpax',
+            'execute_callback'    => function () {
+                $events = wp_count_posts( 'wpax_event' );
+                return array(
+                    'organization'    => get_bloginfo( 'name' ),
+                    'upcoming_events' => isset( $events->publish ) ? (int) $events->publish : 0,
+                );
+            },
+            'permission_callback' => '__return_true',
+            'meta'                => array( 'annotations' => array( 'readonly' => true ) ),
+        ) );
+    }
+} );
+`;
+
+  const seedPhp = `<?php
+require_once '/wordpress/wp-load.php';
+
+$pages = array(
+    'home'      => array( 'title' => 'Home', 'content' => '<!-- wp:heading {"level":1} --><h1>Serving Our Community Together</h1><!-- /wp:heading --><!-- wp:paragraph --><p>Edit our mission, events, and impact stories directly in the WordPress Block Editor.</p><!-- /wp:paragraph -->' ),
+    'events'    => array( 'title' => 'Events', 'content' => '<!-- wp:heading {"level":1} --><h1>Upcoming Community Events</h1><!-- /wp:heading -->' ),
+    'donate'    => array( 'title' => 'Donate', 'content' => '<!-- wp:heading {"level":1} --><h1>Support Our Mission</h1><!-- /wp:heading --><!-- wp:paragraph --><p>Connect GiveWP or Stripe to accept one-time and recurring donations.</p><!-- /wp:paragraph -->' ),
+    'volunteer' => array( 'title' => 'Volunteer', 'content' => '<!-- wp:heading {"level":1} --><h1>Volunteer Signup</h1><!-- /wp:heading -->' ),
+);
+
+$home_id = 0;
+foreach ( $pages as $slug => $cfg ) {
+    $existing = get_page_by_path( $slug );
+    if ( ! $existing ) {
+        $id = wp_insert_post( array(
+            'post_type'    => 'page',
+            'post_status'  => 'publish',
+            'post_name'    => $slug,
+            'post_title'   => $cfg['title'],
+            'post_content' => $cfg['content'],
+        ) );
+    } else {
+        $id = $existing->ID;
+    }
+    if ( $slug === 'home' ) {
+        $home_id = (int) $id;
+    }
+}
+
+if ( $home_id > 0 ) {
+    update_option( 'show_on_front', 'page' );
+    update_option( 'page_on_front', $home_id );
+}
+
+$events = array(
+    array( 'title' => 'Community Park Cleanup', 'date' => '2026-12-06' ),
+    array( 'title' => 'Annual Winter Fundraiser', 'date' => '2026-12-18' ),
+);
+foreach ( $events as $ev ) {
+    $id = wp_insert_post( array(
+        'post_type'    => 'wpax_event',
+        'post_status'  => 'publish',
+        'post_title'   => $ev['title'],
+        'post_content' => '<!-- wp:paragraph --><p>Join our volunteers for ' . esc_html( $ev['title'] ) . '.</p><!-- /wp:paragraph -->',
+    ) );
+    if ( $id && ! is_wp_error( $id ) ) {
+        update_post_meta( $id, '_wpax_event_date', $ev['date'] );
+    }
+}
+flush_rewrite_rules();
+`;
+
+  return {
+    preset: 'nonprofit',
+    defaultName,
+    blueprint: {
+      $schema: 'https://playground.wordpress.net/blueprint-schema.json',
+      landingPage: '/',
+      meta: {
+        title: defaultName,
+        author: 'WPAX',
+        description: 'Reproducible WordPress nonprofit starter with Events, Donations, Volunteers, REST API, and Abilities API.',
+      },
+      preferredVersions: { php: '8.3', wp: 'latest' },
+      login: true,
+      steps: [
+        {
+          step: 'setSiteOptions',
+          options: {
+            blogname: defaultName,
+            blogdescription: 'Community events, donations, and volunteer coordination.',
+            permalink_structure: '/%postname%/',
+          },
+        },
+        { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-nonprofit.php', data: muPluginCode },
+        { step: 'runPHP', code: seedPhp },
+      ],
+    },
+    verify: {
+      expected_blogname: defaultName,
+      required_pages: ['home', 'events', 'donate', 'volunteer'],
+      required_post_types: ['wpax_event'],
+      required_rest_routes: ['/wp/v2/types', '/wpax/v1/nonprofit-summary'],
+      require_abilities_api: true,
+    },
+    readme: `# ${defaultName}\n\nScaffolded by \`wpax init nonprofit\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+  };
+}
+
+function buildCourseTemplate(): PresetTemplate {
+  const defaultName = 'Online Course Studio';
+  const muPluginCode = `<?php
+/**
+ * Plugin Name: WPAX Course Essentials
+ * Description: Courses & video lessons CPTs, enrollment REST endpoint, and WP 6.9+ Abilities API registration.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+add_action( 'init', function () {
+    register_post_type( 'wpax_course', array(
+        'labels'       => array( 'name' => 'Courses', 'singular_name' => 'Course' ),
+        'public'       => true,
+        'show_in_rest' => true,
+        'supports'     => array( 'title', 'editor', 'excerpt', 'custom-fields' ),
+        'has_archive'  => true,
+        'rewrite'      => array( 'slug' => 'courses' ),
+    ) );
+    register_post_type( 'wpax_lesson', array(
+        'labels'       => array( 'name' => 'Lessons', 'singular_name' => 'Lesson' ),
+        'public'       => true,
+        'show_in_rest' => true,
+        'supports'     => array( 'title', 'editor', 'custom-fields' ),
+        'rewrite'      => array( 'slug' => 'lessons' ),
+    ) );
+} );
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'wpax/v1', '/courses', array(
+        'methods'             => 'GET',
+        'permission_callback' => '__return_true',
+        'callback'            => function () {
+            $courses = get_posts( array( 'post_type' => 'wpax_course', 'post_status' => 'publish', 'numberposts' => 20 ) );
+            $items = array();
+            foreach ( $courses as $c ) {
+                $items[] = array(
+                    'id'    => $c->ID,
+                    'title' => $c->post_title,
+                    'price' => (float) get_post_meta( $c->ID, '_wpax_course_price', true ),
+                );
+            }
+            return rest_ensure_response( array( 'courses' => $items, 'count' => count( $items ) ) );
+        },
+    ) );
+} );
+
+add_action( 'wp_abilities_api_categories_init', function () {
+    if ( function_exists( 'wp_register_ability_category' ) ) {
+        wp_register_ability_category( 'wpax', array(
+            'label'       => 'WPAX Courses',
+            'description' => 'Course catalog and lesson abilities.',
+        ) );
+    }
+} );
+
+add_action( 'wp_abilities_api_init', function () {
+    if ( function_exists( 'wp_register_ability' ) ) {
+        wp_register_ability( 'wpax/list-courses', array(
+            'label'               => 'List Courses',
+            'description'         => 'Returns published courses and prices.',
+            'category'            => 'wpax',
+            'execute_callback'    => function () {
+                $counts = wp_count_posts( 'wpax_course' );
+                return array( 'courses_published' => isset( $counts->publish ) ? (int) $counts->publish : 0 );
+            },
+            'permission_callback' => '__return_true',
+            'meta'                => array( 'annotations' => array( 'readonly' => true ) ),
+        ) );
+    }
+} );
+`;
+
+  const seedPhp = `<?php
+require_once '/wordpress/wp-load.php';
+
+$pages = array(
+    'home'       => array( 'title' => 'Home', 'content' => '<!-- wp:heading {"level":1} --><h1>Learn Online at Your Own Pace</h1><!-- /wp:heading -->' ),
+    'courses'    => array( 'title' => 'Courses', 'content' => '<!-- wp:heading {"level":1} --><h1>Course Catalog</h1><!-- /wp:heading -->' ),
+    'my-courses' => array( 'title' => 'My Courses', 'content' => '<!-- wp:heading {"level":1} --><h1>Student Dashboard</h1><!-- /wp:heading -->' ),
+    'contact'    => array( 'title' => 'Contact', 'content' => '<!-- wp:heading {"level":1} --><h1>Instructor Contact</h1><!-- /wp:heading -->' ),
+);
+
+$home_id = 0;
+foreach ( $pages as $slug => $cfg ) {
+    $existing = get_page_by_path( $slug );
+    if ( ! $existing ) {
+        $id = wp_insert_post( array(
+            'post_type'    => 'page',
+            'post_status'  => 'publish',
+            'post_name'    => $slug,
+            'post_title'   => $cfg['title'],
+            'post_content' => $cfg['content'],
+        ) );
+    } else {
+        $id = $existing->ID;
+    }
+    if ( $slug === 'home' ) {
+        $home_id = (int) $id;
+    }
+}
+
+if ( $home_id > 0 ) {
+    update_option( 'show_on_front', 'page' );
+    update_option( 'page_on_front', $home_id );
+}
+
+$cid = wp_insert_post( array(
+    'post_type'    => 'wpax_course',
+    'post_status'  => 'publish',
+    'post_title'   => 'Foundations Video Workshop',
+    'post_content' => '<!-- wp:paragraph --><p>Step-by-step recorded video lessons with downloadable notes.</p><!-- /wp:paragraph -->',
+) );
+if ( $cid && ! is_wp_error( $cid ) ) {
+    update_post_meta( $cid, '_wpax_course_price', '79.00' );
+}
+wp_insert_post( array(
+    'post_type'    => 'wpax_lesson',
+    'post_status'  => 'publish',
+    'post_title'   => 'Lesson 1: Free Preview & Setup',
+    'post_content' => '<!-- wp:paragraph --><p>Embed Vimeo, Bunny Stream, or Mux video blocks directly in the Block Editor.</p><!-- /wp:paragraph -->',
+) );
+flush_rewrite_rules();
+`;
+
+  return {
+    preset: 'course',
+    defaultName,
+    blueprint: {
+      $schema: 'https://playground.wordpress.net/blueprint-schema.json',
+      landingPage: '/',
+      meta: {
+        title: defaultName,
+        author: 'WPAX',
+        description: 'Reproducible WordPress online course & video lesson starter with Abilities API.',
+      },
+      preferredVersions: { php: '8.3', wp: 'latest' },
+      login: true,
+      steps: [
+        {
+          step: 'setSiteOptions',
+          options: {
+            blogname: defaultName,
+            blogdescription: 'Self-owned online video courses without SaaS lock-in.',
+            permalink_structure: '/%postname%/',
+          },
+        },
+        { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-course.php', data: muPluginCode },
+        { step: 'runPHP', code: seedPhp },
+      ],
+    },
+    verify: {
+      expected_blogname: defaultName,
+      required_pages: ['home', 'courses', 'my-courses', 'contact'],
+      required_post_types: ['wpax_course', 'wpax_lesson'],
+      required_rest_routes: ['/wp/v2/types', '/wpax/v1/courses'],
+      require_abilities_api: true,
+    },
+    readme: `# ${defaultName}\n\nScaffolded by \`wpax init course\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+  };
+}
+
+function buildMigrationTemplate(): PresetTemplate {
+  const defaultName = 'Migrated Editable Site';
+  const muPluginCode = `<?php
+/**
+ * Plugin Name: WPAX Migration Essentials
+ * Description: Legacy .html -> clean URL 301 redirect support, REST status route, and WP 6.9+ Abilities API registration.
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+add_action( 'template_redirect', function () {
+    $uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';
+    $path = (string) wp_parse_url( $uri, PHP_URL_PATH );
+    if ( preg_match( '#^/([a-z0-9_-]+)\\.html$#i', $path, $m ) ) {
+        $slug = strtolower( $m[1] );
+        $target = ( $slug === 'index' ) ? home_url( '/' ) : home_url( '/' . $slug . '/' );
+        wp_safe_redirect( $target, 301 );
+        exit;
+    }
+} );
+
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'wpax/v1', '/migration-status', array(
+        'methods'             => 'GET',
+        'permission_callback' => '__return_true',
+        'callback'            => function () {
+            $pages = wp_count_posts( 'page' );
+            return rest_ensure_response( array(
+                'site_name'         => get_bloginfo( 'name' ),
+                'editable_pages'    => isset( $pages->publish ) ? (int) $pages->publish : 0,
+                'legacy_redirects'  => true,
+            ) );
+        },
+    ) );
+} );
+
+add_action( 'wp_abilities_api_categories_init', function () {
+    if ( function_exists( 'wp_register_ability_category' ) ) {
+        wp_register_ability_category( 'wpax', array(
+            'label'       => 'WPAX Migration',
+            'description' => 'Static-to-WordPress migration metadata abilities.',
+        ) );
+    }
+} );
+
+add_action( 'wp_abilities_api_init', function () {
+    if ( function_exists( 'wp_register_ability' ) ) {
+        wp_register_ability( 'wpax/get-migration-status', array(
+            'label'               => 'Get Migration Status',
+            'description'         => 'Returns editable page count and legacy .html redirect status.',
+            'category'            => 'wpax',
+            'execute_callback'    => function () {
+                $pages = wp_count_posts( 'page' );
+                return array(
+                    'editable_pages'   => isset( $pages->publish ) ? (int) $pages->publish : 0,
+                    'legacy_redirects' => true,
+                );
+            },
+            'permission_callback' => '__return_true',
+            'meta'                => array( 'annotations' => array( 'readonly' => true ) ),
+        ) );
+    }
+} );
+`;
+
+  const seedPhp = `<?php
+require_once '/wordpress/wp-load.php';
+
+$pages = array(
+    'home'    => array( 'title' => 'Home', 'content' => '<!-- wp:heading {"level":1} --><h1>Now Visually Editable in WordPress</h1><!-- /wp:heading --><!-- wp:paragraph --><p>All migrated sections can be edited directly in the Block Editor without touching HTML files.</p><!-- /wp:paragraph -->' ),
+    'about'   => array( 'title' => 'About', 'content' => '<!-- wp:heading {"level":1} --><h1>About Us</h1><!-- /wp:heading -->' ),
+    'contact' => array( 'title' => 'Contact', 'content' => '<!-- wp:heading {"level":1} --><h1>Contact</h1><!-- /wp:heading -->' ),
+);
+
+$home_id = 0;
+foreach ( $pages as $slug => $cfg ) {
+    $existing = get_page_by_path( $slug );
+    if ( ! $existing ) {
+        $id = wp_insert_post( array(
+            'post_type'    => 'page',
+            'post_status'  => 'publish',
+            'post_name'    => $slug,
+            'post_title'   => $cfg['title'],
+            'post_content' => $cfg['content'],
+        ) );
+    } else {
+        $id = $existing->ID;
+    }
+    if ( $slug === 'home' ) {
+        $home_id = (int) $id;
+    }
+}
+
+if ( $home_id > 0 ) {
+    update_option( 'show_on_front', 'page' );
+    update_option( 'page_on_front', $home_id );
+}
+flush_rewrite_rules();
+`;
+
+  return {
+    preset: 'migration',
+    defaultName,
+    blueprint: {
+      $schema: 'https://playground.wordpress.net/blueprint-schema.json',
+      landingPage: '/',
+      meta: {
+        title: defaultName,
+        author: 'WPAX',
+        description: 'Reproducible static-HTML-to-WordPress migration starter with .html 301 redirects and Abilities API.',
+      },
+      preferredVersions: { php: '8.3', wp: 'latest' },
+      login: true,
+      steps: [
+        {
+          step: 'setSiteOptions',
+          options: {
+            blogname: defaultName,
+            blogdescription: 'Migrated from static HTML to WordPress Block Editor.',
+            permalink_structure: '/%postname%/',
+          },
+        },
+        { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
+        { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/wpax-migration.php', data: muPluginCode },
+        { step: 'runPHP', code: seedPhp },
+      ],
+    },
+    verify: {
+      expected_blogname: defaultName,
+      required_pages: ['home', 'about', 'contact'],
+      required_rest_routes: ['/wp/v2/types', '/wpax/v1/migration-status'],
+      require_abilities_api: true,
+    },
+    readme: `# ${defaultName}\n\nScaffolded by \`wpax init migration\`.\n\n## Quick Start\n\n\`\`\`bash\nnpm start\nwpax verify .\nwpax export . --out ./dist-wp\n\`\`\`\n`,
+  };
 }
 
 function copyDirRecursive(srcDir: string, destDir: string, written: string[]): void {

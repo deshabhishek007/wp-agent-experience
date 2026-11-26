@@ -1,0 +1,37 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/",
+  "meta": {
+    "title": "Migrated Editable Site",
+    "author": "WPAX",
+    "description": "Reproducible static-HTML-to-WordPress migration starter with .html 301 redirects and Abilities API."
+  },
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Migrated Editable Site",
+        "blogdescription": "Migrated from static HTML to WordPress Block Editor.",
+        "permalink_structure": "/%postname%/"
+      }
+    },
+    {
+      "step": "mkdir",
+      "path": "/wordpress/wp-content/mu-plugins"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/wp-content/mu-plugins/wpax-migration.php",
+      "data": "<?php\n/**\n * Plugin Name: WPAX Migration Essentials\n * Description: Legacy .html -> clean URL 301 redirect support, REST status route, and WP 6.9+ Abilities API registration.\n */\nif ( ! defined( 'ABSPATH' ) ) {\n    exit;\n}\n\nadd_action( 'template_redirect', function () {\n    $uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '';\n    $path = (string) wp_parse_url( $uri, PHP_URL_PATH );\n    if ( preg_match( '#^/([a-z0-9_-]+)\\.html$#i', $path, $m ) ) {\n        $slug = strtolower( $m[1] );\n        $target = ( $slug === 'index' ) ? home_url( '/' ) : home_url( '/' . $slug . '/' );\n        wp_safe_redirect( $target, 301 );\n        exit;\n    }\n} );\n\nadd_action( 'rest_api_init', function () {\n    register_rest_route( 'wpax/v1', '/migration-status', array(\n        'methods'             => 'GET',\n        'permission_callback' => '__return_true',\n        'callback'            => function () {\n            $pages = wp_count_posts( 'page' );\n            return rest_ensure_response( array(\n                'site_name'         => get_bloginfo( 'name' ),\n                'editable_pages'    => isset( $pages->publish ) ? (int) $pages->publish : 0,\n                'legacy_redirects'  => true,\n            ) );\n        },\n    ) );\n} );\n\nadd_action( 'wp_abilities_api_categories_init', function () {\n    if ( function_exists( 'wp_register_ability_category' ) ) {\n        wp_register_ability_category( 'wpax', array(\n            'label'       => 'WPAX Migration',\n            'description' => 'Static-to-WordPress migration metadata abilities.',\n        ) );\n    }\n} );\n\nadd_action( 'wp_abilities_api_init', function () {\n    if ( function_exists( 'wp_register_ability' ) ) {\n        wp_register_ability( 'wpax/get-migration-status', array(\n            'label'               => 'Get Migration Status',\n            'description'         => 'Returns editable page count and legacy .html redirect status.',\n            'category'            => 'wpax',\n            'execute_callback'    => function () {\n                $pages = wp_count_posts( 'page' );\n                return array(\n                    'editable_pages'   => isset( $pages->publish ) ? (int) $pages->publish : 0,\n                    'legacy_redirects' => true,\n                );\n            },\n            'permission_callback' => '__return_true',\n            'meta'                => array( 'annotations' => array( 'readonly' => true ) ),\n        ) );\n    }\n} );\n"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\nrequire_once '/wordpress/wp-load.php';\n\n$pages = array(\n    'home'    => array( 'title' => 'Home', 'content' => '<!-- wp:heading {\"level\":1} --><h1>Now Visually Editable in WordPress</h1><!-- /wp:heading --><!-- wp:paragraph --><p>All migrated sections can be edited directly in the Block Editor without touching HTML files.</p><!-- /wp:paragraph -->' ),\n    'about'   => array( 'title' => 'About', 'content' => '<!-- wp:heading {\"level\":1} --><h1>About Us</h1><!-- /wp:heading -->' ),\n    'contact' => array( 'title' => 'Contact', 'content' => '<!-- wp:heading {\"level\":1} --><h1>Contact</h1><!-- /wp:heading -->' ),\n);\n\n$home_id = 0;\nforeach ( $pages as $slug => $cfg ) {\n    $existing = get_page_by_path( $slug );\n    if ( ! $existing ) {\n        $id = wp_insert_post( array(\n            'post_type'    => 'page',\n            'post_status'  => 'publish',\n            'post_name'    => $slug,\n            'post_title'   => $cfg['title'],\n            'post_content' => $cfg['content'],\n        ) );\n    } else {\n        $id = $existing->ID;\n    }\n    if ( $slug === 'home' ) {\n        $home_id = (int) $id;\n    }\n}\n\nif ( $home_id > 0 ) {\n    update_option( 'show_on_front', 'page' );\n    update_option( 'page_on_front', $home_id );\n}\nflush_rewrite_rules();\n"
+    }
+  ]
+}

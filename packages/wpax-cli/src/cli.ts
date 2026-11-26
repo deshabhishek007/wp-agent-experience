@@ -1,11 +1,13 @@
 #!/usr/bin/env node
+import { exportForProduction } from './export.js';
+import { runMcpStdioServer } from './mcp.js';
 import { bootBlueprint, verifyBlueprint } from './playground.js';
 import { initProject, isValidPreset } from './presets.js';
 import { evaluateFit, loadRegistry, validateRegistry } from './registry.js';
 import { PRESET_NAMES } from './types.js';
 import { validateBlueprintFile } from './validator.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 
 interface ParsedArgs {
   positionals: string[];
@@ -82,10 +84,12 @@ function printHelp(): void {
   console.log(`wpax v${VERSION} — WordPress Agent Experience CLI (wraps @wp-playground/cli@3.1.66)
 
 Usage:
-  wpax init <small-business|commerce|publishing> [--dir <path>] [--name <title>] [--wp <ver>] [--php <ver>] [--json]
+  wpax init <${PRESET_NAMES.join('|')}> [--dir <path>] [--name <title>] [--wp <ver>] [--php <ver>] [--json]
   wpax validate <blueprint-path> [--json]
   wpax boot <dir-or-blueprint> [--headless] [--port <port>] [--wp <ver>] [--php <ver>] [--json]
   wpax verify <dir-or-blueprint> [--checks <verify.json>] [--timeout <ms>] [--wp <ver>] [--php <ver>] [--json]
+  wpax export <dir-or-blueprint> [--out <dir>] [--json]
+  wpax mcp
   wpax catalog [--registry <path>] [--json]
   wpax check-fit "<prompt>" [--registry <path>] [--json]
   wpax validate-registry [path] [--schema <path>] [--json]
@@ -371,6 +375,27 @@ async function main(): Promise<number> {
           }
         }
         return result.valid ? 0 : 1;
+      }
+
+      case 'export': {
+        const target = positionals[0] ?? '.';
+        const outDir = getStringFlag(flags, 'out') ?? './dist-wp';
+        const result = exportForProduction({ target, outDir });
+
+        if (asJson) {
+          console.log(JSON.stringify(result, null, 2));
+        } else {
+          console.log(`Exported WordPress production bundle to ${result.out_dir}`);
+          console.log(`  Source blueprint: ${result.source_blueprint}`);
+          console.log(`  wp-content files: ${result.wp_content_files.length}`);
+          console.log(`  WP-CLI commands:  ${result.wp_cli_commands.length}`);
+          console.log(`  Next: see ${result.out_dir}/DEPLOY.md`);
+        }
+        return 0;
+      }
+
+      case 'mcp': {
+        return await runMcpStdioServer();
       }
 
       default: {

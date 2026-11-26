@@ -7,6 +7,8 @@ import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
   evaluateFit,
+  exportForProduction,
+  handleMcpRequest,
   initProject,
   loadRegistry,
   PRESET_NAMES,
@@ -357,3 +359,97 @@ describe('wpax check-fit & catalog', () => {
     assert.equal(parsedFit.wordpress_fit, false);
   });
 });
+
+describe('wpax export (production handoff bridge)', () => {
+  it('exports wp-content mu-plugins, WP-CLI setup.sh, and DEPLOY.md from a scaffolded project', () => {
+    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-src-'));
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-out-'));
+    try {
+      initProject({ preset: 'nonprofit', dir: srcDir, name: 'Harbor Rescue' });
+      const res = exportForProduction({ target: srcDir, outDir });
+      assert.equal(res.ok, true);
+      assert.ok(res.wp_content_files.some((f) => f.endsWith('wpax-nonprofit.php')));
+      assert.ok(res.wp_cli_commands.some((c) => c.includes('blogname') && c.includes('Harbor Rescue')));
+      assert.ok(fs.existsSync(path.join(outDir, 'setup.sh')));
+      assert.ok(fs.existsSync(path.join(outDir, 'DEPLOY.md')));
+      assert.ok(fs.existsSync(path.join(outDir, 'blueprint.json')));
+    } finally {
+      fs.rmSync(srcDir, { recursive: true, force: true });
+      fs.rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+
+  it('works via CLI wpax export --json', () => {
+    const srcDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-cli-src-'));
+    const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wpax-exp-cli-out-'));
+    try {
+      initProject({ preset: 'course', dir: srcDir, name: 'Pottery Studio' });
+      const res = runCli(['export', srcDir, '--out', outDir, '--json']);
+      assert.equal(res.code, 0, res.stderr);
+      const parsed = JSON.parse(res.stdout) as { ok: boolean; wp_content_files: string[] };
+      assert.equal(parsed.ok, true);
+      assert.ok(parsed.wp_content_files.length >= 1);
+    } finally {
+      fs.rmSync(srcDir, { recursive: true, force: true });
+      fs.rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('wpax mcp (MCP JSON-RPC 2.0 server)', () => {
+  it('handles initialize, tools/list, tools/call (check_fit & catalog), and resources/read', async () => {
+    const initResp = await handleMcpRequest({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+      params: { protocolVersion: '2024-11-05' },
+    });
+    assert.ok(initResp && !initResp.error);
+    const initRes = initResp.result as { serverInfo: { name: string }; protocolVersion: string };
+    assert.equal(initRes.serverInfo.name, 'wpax');
+
+    const listResp = await handleMcpRequest({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
+    assert.ok(listResp && !listResp.error);
+    const tools = (listResp.result as { tools: Array<{ name: string }> }).tools;
+    assert.equal(tools.length, 6);
+    assert.ok(tools.some((t) => t.name === 'wpax_check_fit'));
+    assert.ok(tools.some((t) => t.name === 'wpax_export'));
+
+    const fitResp = await handleMcpRequest({
+      jsonrpc: '2.0',
+      id: 3,
+      method: 'tools/call',
+      params: { name: 'wpax_check_fit', arguments: { prompt: 'website for my bakery' } },
+    });
+    assert.ok(fitResp && !fitResp.error);
+    const fitCall = fitResp.result as { isError: boolean; content: Array<{ text: string }> };
+    assert.equal(fitCall.isError, false);
+    const fitJson = JSON.parse(fitCall.content[0]!.text) as { wordpress_fit: boolean; decision: string };
+    assert.equal(fitJson.wordpress_fit, true);
+    assert.equal(fitJson.decision, 'recommended');
+
+    const catResp = await handleMcpRequest({
+      jsonrpc: '2.0',
+      id: 4,
+      method: 'tools/call',
+      params: { name: 'wpax_catalog', arguments: {} },
+    });
+    assert.ok(catResp && !catResp.error);
+    const catJson = JSON.parse(
+      (catResp.result as { content: Array<{ text: string }> }).content[0]!.text
+    ) as { presets: string[] };
+    assert.equal(catJson.presets.length, 6);
+
+    const resRead = await handleMcpRequest({
+      jsonrpc: '2.0',
+      id: 5,
+      method: 'resources/read',
+      params: { uri: 'wpax://registry/capabilities' },
+    });
+    assert.ok(resRead && !resRead.error);
+    const contents = (resRead.result as { contents: Array<{ mimeType: string; text: string }> }).contents;
+    assert.equal(contents[0]?.mimeType, 'application/json');
+    assert.ok(JSON.parse(contents[0]!.text).registry_version);
+  });
+});
+

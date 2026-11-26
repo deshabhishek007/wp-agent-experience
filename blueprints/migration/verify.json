@@ -1,0 +1,13 @@
+{
+  "expected_blogname": "Migrated Editable Site",
+  "required_pages": [
+    "home",
+    "about",
+    "contact"
+  ],
+  "required_rest_routes": [
+    "/wp/v2/types",
+    "/wpax/v1/migration-status"
+  ],
+  "require_abilities_api": true
+}
