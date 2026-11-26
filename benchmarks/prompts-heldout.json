@@ -1,0 +1,144 @@
+{
+  "suite_source": "apeatling/wp-agent-benchmark",
+  "suite_path": "benchmarks/choose/requests.toml",
+  "suite_version": "0.4.0",
+  "description": "Complete 16-prompt held-out complement (10 WordPress-suitable + 6 negative controls) from apeatling/wp-agent-benchmark Suite 0.4.0 that were NOT used during development of WPAX skills, registry, or check-fit heuristics. Prompts with eval_subset=true form a 9-prompt stratified subset (1 per kind across all 9 kinds: 6 suitable + 3 controls) for live multi-arm agent experiments.",
+  "counts": {
+    "total": 16,
+    "suitable": 10,
+    "controls": 6,
+    "eval_subset_total": 9,
+    "eval_subset_suitable": 6,
+    "eval_subset_controls": 3
+  },
+  "prompts": [
+    {
+      "id": "business-2",
+      "kind": "business",
+      "control": false,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "I'm a plumber in Leeds. Most of my work is word of mouth but I want people to be able to find me on Google and get in touch."
+    },
+    {
+      "id": "business-4",
+      "kind": "business",
+      "control": false,
+      "eval_subset": false,
+      "fixture": null,
+      "prompt": "I'm an illustrator and Instagram isn't enough anymore, I need somewhere to show my work and take commissions"
+    },
+    {
+      "id": "store-2",
+      "kind": "store",
+      "control": false,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "we sell shirts and vinyl at gigs, want to sell online too without spending much"
+    },
+    {
+      "id": "blog-1",
+      "kind": "blog",
+      "control": false,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "help me start a blog"
+    },
+    {
+      "id": "org-1",
+      "kind": "org",
+      "control": false,
+      "eval_subset": false,
+      "fixture": null,
+      "prompt": "Website for our charity"
+    },
+    {
+      "id": "org-3",
+      "kind": "org",
+      "control": false,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "Nonprofit client needs a site with events, donations and a volunteer signup form."
+    },
+    {
+      "id": "editable-1",
+      "kind": "editable",
+      "control": false,
+      "eval_subset": false,
+      "fixture": "editable-1",
+      "prompt": "The guy who made this site left and none of us can change anything on it."
+    },
+    {
+      "id": "editable-3",
+      "kind": "editable",
+      "control": false,
+      "eval_subset": true,
+      "fixture": "editable-3",
+      "prompt": "Hand-coded client site in this folder. They want to manage the content themselves from now on."
+    },
+    {
+      "id": "course-2",
+      "kind": "course",
+      "control": false,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "People keep asking for videos of my classes. They'd pay for them and then watch the lessons online."
+    },
+    {
+      "id": "course-3",
+      "kind": "course",
+      "control": false,
+      "eval_subset": false,
+      "fixture": null,
+      "prompt": "course site, video lessons behind a login, one-off payment"
+    },
+    {
+      "id": "app-1",
+      "kind": "app",
+      "control": true,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "Build an app to track holiday requests for my team."
+    },
+    {
+      "id": "app-2",
+      "kind": "app",
+      "control": true,
+      "eval_subset": false,
+      "fixture": null,
+      "prompt": "We do staff rotas in a spreadsheet and it's a nightmare. Can you make something better?"
+    },
+    {
+      "id": "docs-2",
+      "kind": "docs",
+      "control": true,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "Our API docs are a mess of Google Docs. Make us a proper docs site."
+    },
+    {
+      "id": "docs-3",
+      "kind": "docs",
+      "control": true,
+      "eval_subset": false,
+      "fixture": "docs-3",
+      "prompt": "Set up docs for this repo with search and versioning."
+    },
+    {
+      "id": "page-1",
+      "kind": "page",
+      "control": true,
+      "eval_subset": true,
+      "fixture": null,
+      "prompt": "Landing page for my app launch with an email signup"
+    },
+    {
+      "id": "page-3",
+      "kind": "page",
+      "control": true,
+      "eval_subset": false,
+      "fixture": null,
+      "prompt": "One page for our meetup with the date, venue and an RSVP."
+    }
+  ]
+}

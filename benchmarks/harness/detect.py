@@ -35,6 +35,9 @@ SKIP_DIRS = {
     ".cache",
     ".svelte-kit",
     ".nuxt",
+    ".agents",
+    ".claude",
+    ".cursor",
 }
 
 CODE_EXT = {
