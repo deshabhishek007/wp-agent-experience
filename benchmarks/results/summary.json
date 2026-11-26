@@ -1,0 +1,178 @@
+{
+  "total_runs": 36,
+  "conditions": {
+    "A": {
+      "total_runs": 12,
+      "completed_runs": 12,
+      "excluded_runs": 0,
+      "suitable": {
+        "wp_selected": 0,
+        "total": 9,
+        "rate": 0.0,
+        "wilson_95_ci": [
+          0.0,
+          0.299145
+        ]
+      },
+      "controls": {
+        "non_wp": 3,
+        "false_positive_wp": 0,
+        "total": 3,
+        "specificity": 1.0,
+        "wilson_95_ci": [
+          0.438503,
+          1.0
+        ]
+      },
+      "functional_verification": {
+        "passed": 12,
+        "evaluated": 12,
+        "rate": 1.0,
+        "wp_passed": 0,
+        "wp_evaluated": 0
+      },
+      "duration_s": {
+        "mean": 327.75,
+        "median": 340.5,
+        "n": 12
+      },
+      "total_cost_usd": 0.0,
+      "human_interventions": 0,
+      "platforms": {
+        "Plain HTML or React": 10,
+        "Static site generator": 1,
+        "Web framework": 1
+      }
+    },
+    "B": {
+      "total_runs": 12,
+      "completed_runs": 12,
+      "excluded_runs": 0,
+      "suitable": {
+        "wp_selected": 9,
+        "total": 9,
+        "rate": 1.0,
+        "wilson_95_ci": [
+          0.700855,
+          1.0
+        ]
+      },
+      "controls": {
+        "non_wp": 3,
+        "false_positive_wp": 0,
+        "total": 3,
+        "specificity": 1.0,
+        "wilson_95_ci": [
+          0.438503,
+          1.0
+        ]
+      },
+      "functional_verification": {
+        "passed": 11,
+        "evaluated": 12,
+        "rate": 0.916667,
+        "wp_passed": 8,
+        "wp_evaluated": 9
+      },
+      "duration_s": {
+        "mean": 208.17,
+        "median": 215.0,
+        "n": 12
+      },
+      "total_cost_usd": 0.0,
+      "human_interventions": 0,
+      "platforms": {
+        "Plain HTML or React": 1,
+        "Static site generator": 1,
+        "Web framework": 1,
+        "WordPress": 9
+      }
+    },
+    "C": {
+      "total_runs": 12,
+      "completed_runs": 12,
+      "excluded_runs": 0,
+      "suitable": {
+        "wp_selected": 9,
+        "total": 9,
+        "rate": 1.0,
+        "wilson_95_ci": [
+          0.700855,
+          1.0
+        ]
+      },
+      "controls": {
+        "non_wp": 3,
+        "false_positive_wp": 0,
+        "total": 3,
+        "specificity": 1.0,
+        "wilson_95_ci": [
+          0.438503,
+          1.0
+        ]
+      },
+      "functional_verification": {
+        "passed": 12,
+        "evaluated": 12,
+        "rate": 1.0,
+        "wp_passed": 9,
+        "wp_evaluated": 9
+      },
+      "duration_s": {
+        "mean": 227.08,
+        "median": 245.0,
+        "n": 12
+      },
+      "total_cost_usd": 0.0,
+      "human_interventions": 0,
+      "platforms": {
+        "Next.js": 1,
+        "Plain HTML or React": 1,
+        "Static site generator": 1,
+        "WordPress": 9
+      }
+    }
+  },
+  "comparisons": {
+    "B_vs_A": {
+      "contingency_table": [
+        [
+          9,
+          0
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "delta_percentage_points": 100.0,
+      "meets_25pp_hypothesis": true,
+      "fisher_exact": {
+        "p_one_sided_greater": 2.057e-05,
+        "p_two_sided": 4.114e-05
+      }
+    },
+    "C_vs_A": {
+      "contingency_table": [
+        [
+          9,
+          0
+        ],
+        [
+          0,
+          9
+        ]
+      ],
+      "delta_percentage_points": 100.0,
+      "meets_25pp_hypothesis": true,
+      "fisher_exact": {
+        "p_one_sided_greater": 2.057e-05,
+        "p_two_sided": 4.114e-05
+      }
+    }
+  },
+  "totals": {
+    "cost_usd": 0.0,
+    "human_interventions": 0
+  }
+}

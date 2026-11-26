@@ -150,7 +150,11 @@ def summarize_condition(runs: list[dict[str, Any]]) -> dict[str, Any]:
     wp_verified_vals = [v for r in wp_completed if (v := _is_verified(r)) is not None]
     wp_verified_passed = sum(1 for v in wp_verified_vals if v)
 
-    durations = [float(r["duration_s"]) for r in completed if r.get("duration_s") is not None]
+    durations = [
+        float(d)
+        for r in completed
+        if (d := r.get("duration_sec", r.get("duration_s"))) is not None
+    ]
     mean_duration = statistics.mean(durations) if durations else None
     median_duration = statistics.median(durations) if durations else None
 

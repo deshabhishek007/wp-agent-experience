@@ -12,3 +12,4 @@ tmp/
 .wpax-tmp/
 benchmarks/results/sandboxes/
 *.zip
+__pycache__/
