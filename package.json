@@ -1,9 +1,14 @@
 {
   "name": "wp-agent-experience",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "license": "GPL-2.0-or-later",
   "type": "module",
   "description": "WordPress Agent Experience (WPAX): discovery skill, capability registry, Playground CLI wrapper, blueprints, and evaluation harness.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patilswapnilv/wp-agent-experience.git"
+  },
   "engines": {
     "node": ">=22.0.0"
   },
