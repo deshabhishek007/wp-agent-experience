@@ -89,7 +89,7 @@ Our [`docs/upstream-gap-analysis.md`](./docs/upstream-gap-analysis.md) traces th
 | 8 | **63 Controlled Experiments** | [`benchmarks/results/`](./benchmarks/results/) | `runs.jsonl` (36 main) + `runs-heldout.jsonl` (27 held-out), statistical summaries & artifact manifest |
 | 9 | **Docs & CI** | [`docs/architecture.md`](./docs/architecture.md), [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) | Architecture specification & automated CI workflow |
 | 10 | **Research Report** | [`docs/research-report.md`](./docs/research-report.md) | Empirical results, Fisher's exact tests, artifact inspections, and honest limitations |
-| 11 | **Upstream Drafts** | [`upstream-drafts/`](./upstream-drafts/) | Staged PRs (`WordPress/agent-skills`, `apeatling/wp-agent-benchmark`), `llms.txt` diff, & publication draft |
+| 11 | **Upstream Contributions** | [`upstream-drafts/`](./upstream-drafts/) | Submitted PRs: [`WordPress/agent-skills#145`](https://github.com/WordPress/agent-skills/pull/145), [`apeatling/wp-agent-benchmark#26`](https://github.com/apeatling/wp-agent-benchmark/pull/26), plus `llms.txt` & publication drafts |
 
 ## Local Development & Reproducibility
 

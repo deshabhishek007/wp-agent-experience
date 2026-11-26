@@ -1,7 +1,18 @@
 {
   "name": "wpai-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Minimal TypeScript CLI & MCP server wrapping @wp-playground/cli for WordPress project scaffolding, Blueprint validation, verification, production export, and capability discovery.",
+  "keywords": [
+    "wordpress",
+    "wordpress-playground",
+    "ai-agents",
+    "mcp",
+    "mcp-server",
+    "agent-skills",
+    "blueprint",
+    "cli",
+    "wp-cli"
+  ],
   "license": "GPL-2.0-or-later",
   "repository": {
     "type": "git",
@@ -23,7 +34,8 @@
     "wpai": "dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "engines": {
     "node": ">=22.0.0"
