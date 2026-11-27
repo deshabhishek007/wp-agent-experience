@@ -387,9 +387,9 @@ describe('wpai export (production handoff bridge)', () => {
       assert.ok(runPhp, 'runPHP step must be reported');
       assert.equal(runPhp.blocking, true);
       assert.match(runPhp.location, /^steps\[\d+\]$/);
-      // Playground-only operations are reported but do not block
+      // Playground-only operations are reported but do not block; wp-content mkdir is exported, not skipped
       assert.ok(res.skipped_steps.some((s) => s.step === 'login' && !s.blocking));
-      assert.ok(res.skipped_steps.some((s) => s.step === 'mkdir' && !s.blocking));
+      assert.ok(!res.skipped_steps.some((s) => s.step === 'mkdir'));
     } finally {
       fs.rmSync(srcDir, { recursive: true, force: true });
       fs.rmSync(outRoot, { recursive: true, force: true });
@@ -430,12 +430,17 @@ describe('wpai export (production handoff bridge)', () => {
           { step: 'setSiteOptions', options: { blogname: 'Plain Site' } },
           { step: 'mkdir', path: '/wordpress/wp-content/mu-plugins' },
           { step: 'writeFile', path: '/wordpress/wp-content/mu-plugins/hello.php', data: '<?php // hi' },
+          { step: 'mkdir', path: '/wordpress/wp-content/uploads/private' },
           { step: 'installPlugin', pluginData: { resource: 'wordpress.org/plugins', slug: 'akismet' } },
         ],
       });
       const res = exportForProduction({ target: srcDir, outDir });
       assert.equal(res.ok, true);
       assert.equal(res.complete, true);
+      assert.ok(
+        fs.statSync(path.join(outDir, 'wp-content', 'uploads', 'private')).isDirectory(),
+        'an empty mkdir under wp-content/ must be recreated in the bundle'
+      );
       assert.ok(res.skipped_steps.every((s) => !s.blocking));
       assert.deepEqual(res.wp_content_files, [path.join('wp-content', 'mu-plugins', 'hello.php')]);
       const deployMd = fs.readFileSync(path.join(outDir, 'DEPLOY.md'), 'utf8');
@@ -463,12 +468,26 @@ describe('wpai export (production handoff bridge)', () => {
           { step: 'installPlugin', pluginData: { resource: 'url', url: 'https://example.com/p.zip' } },
           { step: 'installTheme', themeData: { resource: 'url', url: 'https://example.com/t.zip' } },
           { step: 'importWxr', file: { resource: 'url', url: 'https://example.com/content.xml' } },
+          { step: 'mkdir', path: '/wordpress/wp-content/../../etc' },
+          { step: 'installPlugin', pluginData: { resource: 'wordpress.org/plugins', slug: '  ' } },
+          { step: 'installTheme', themeData: { resource: 'wordpress.org/themes', slug: '' } },
         ],
       });
       const res = exportForProduction({ target: srcDir, outDir });
       assert.equal(res.ok, false);
       const blocking = res.skipped_steps.filter((s) => s.blocking).map((s) => s.location);
-      assert.deepEqual(blocking, ['constants', 'steps[0]', 'steps[1]', 'steps[2]', 'steps[3]', 'steps[4]']);
+      assert.deepEqual(blocking, [
+        'constants',
+        'steps[0]',
+        'steps[1]',
+        'steps[2]',
+        'steps[3]',
+        'steps[4]',
+        'steps[5]',
+        'steps[6]',
+        'steps[7]',
+      ]);
+      assert.ok(!res.wp_cli_commands.some((c) => c.includes("install ''")));
     } finally {
       fs.rmSync(srcDir, { recursive: true, force: true });
       fs.rmSync(outDir, { recursive: true, force: true });
@@ -500,6 +519,10 @@ describe('wpai export (production handoff bridge)', () => {
       assert.equal(partialJson.ok, true);
       assert.equal(partialJson.complete, false);
       assert.ok(partialJson.wp_content_files.length >= 1);
+
+      const explicit = runCli(['export', srcDir, '--out', outDir, '--allow-partial=true', '--json']);
+      assert.equal(explicit.code, 0, explicit.stderr);
+      assert.equal((JSON.parse(explicit.stdout) as { ok: boolean }).ok, true);
     } finally {
       fs.rmSync(srcDir, { recursive: true, force: true });
       fs.rmSync(outRoot, { recursive: true, force: true });

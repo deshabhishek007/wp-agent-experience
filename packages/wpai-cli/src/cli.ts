@@ -381,7 +381,7 @@ async function main(): Promise<number> {
       case 'export': {
         const target = positionals[0] ?? '.';
         const outDir = getStringFlag(flags, 'out') ?? './dist-wp';
-        const allowPartial = flags['allow-partial'] === true;
+        const allowPartial = getBoolFlag(flags, 'allow-partial');
         const result = exportForProduction({ target, outDir, allowPartial });
         const blocking = result.skipped_steps.filter((s) => s.blocking);
 

@@ -83,6 +83,7 @@ export function exportForProduction(options: ExportOptions): ExportResult {
   const wpCliCommands: string[] = [];
   const skippedSteps: SkippedStep[] = [];
   const pendingWrites: Array<{ rel: string; content: string }> = [];
+  const pendingDirs: string[] = [];
   const wpContentPrefix = '/wordpress/wp-content/';
 
   const skip = (location: string, step: string, reason: string, blocking = true): void => {
@@ -165,7 +166,13 @@ export function exportForProduction(options: ExportOptions): ExportResult {
       case 'mkdir': {
         const dirPath = typeof step.path === 'string' ? step.path : '';
         if (dirPath === '/wordpress/wp-content' || dirPath.startsWith(wpContentPrefix)) {
-          skip(location, name, 'Directory is created when wp-content/ files are copied.', false);
+          const relInside = dirPath.slice(wpContentPrefix.length).replace(/^\/+|\/+$/g, '');
+          if (relInside.includes('..')) {
+            skip(location, name, `Unsafe wp-content path (${dirPath}); directory not exported.`);
+            break;
+          }
+          // Recreate the directory in the bundle so even an empty one reaches production.
+          pendingDirs.push(relInside);
         } else {
           skip(location, name, `Creates a directory outside wp-content/ (${dirPath || 'no path'}); create it manually.`);
         }
@@ -191,30 +198,30 @@ export function exportForProduction(options: ExportOptions): ExportResult {
 
       case 'installPlugin': {
         const pluginData = step.pluginData as Record<string, unknown> | undefined;
-        if (pluginData && pluginData.resource === 'wordpress.org/plugins' && typeof pluginData.slug === 'string') {
+        if (pluginData && pluginData.resource === 'wordpress.org/plugins' && typeof pluginData.slug === 'string' && pluginData.slug.trim()) {
           const activate =
             !step.options || (step.options as Record<string, unknown>).activate !== false;
           wpCliCommands.push(
-            `wp plugin install ${shellEscapeSingle(pluginData.slug)}${activate ? ' --activate' : ''}`
+            `wp plugin install ${shellEscapeSingle(pluginData.slug.trim())}${activate ? ' --activate' : ''}`
           );
         } else {
           const source = pluginData && typeof pluginData.resource === 'string' ? pluginData.resource : 'unknown';
-          skip(location, name, `Plugin source "${source}" is not a WordPress.org slug; install this plugin manually.`);
+          skip(location, name, `Plugin source "${source}" has no usable WordPress.org slug; install this plugin manually.`);
         }
         break;
       }
 
       case 'installTheme': {
         const themeData = step.themeData as Record<string, unknown> | undefined;
-        if (themeData && themeData.resource === 'wordpress.org/themes' && typeof themeData.slug === 'string') {
+        if (themeData && themeData.resource === 'wordpress.org/themes' && typeof themeData.slug === 'string' && themeData.slug.trim()) {
           const activate =
             !step.options || (step.options as Record<string, unknown>).activate !== false;
           wpCliCommands.push(
-            `wp theme install ${shellEscapeSingle(themeData.slug)}${activate ? ' --activate' : ''}`
+            `wp theme install ${shellEscapeSingle(themeData.slug.trim())}${activate ? ' --activate' : ''}`
           );
         } else {
           const source = themeData && typeof themeData.resource === 'string' ? themeData.resource : 'unknown';
-          skip(location, name, `Theme source "${source}" is not a WordPress.org slug; install this theme manually.`);
+          skip(location, name, `Theme source "${source}" has no usable WordPress.org slug; install this theme manually.`);
         }
         break;
       }
@@ -275,6 +282,9 @@ export function exportForProduction(options: ExportOptions): ExportResult {
   const localWpContent = path.join(baseDir, 'wp-content');
   if (fs.existsSync(localWpContent) && fs.statSync(localWpContent).isDirectory()) {
     copyDirCollect(localWpContent, wpContentOut, outDir, wpContentFiles);
+  }
+  for (const relInside of pendingDirs) {
+    fs.mkdirSync(path.join(wpContentOut, relInside), { recursive: true });
   }
   for (const { rel: relInside, content } of pendingWrites) {
     const targetFile = path.join(wpContentOut, relInside);
